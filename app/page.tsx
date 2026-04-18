@@ -56,10 +56,9 @@ export default function HomePage() {
           }} />
           <div style={{ paddingLeft: 12 }}>
             <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: 2, color: 'var(--text-muted)', marginBottom: 2 }}>
-              Net Position 💸
-            </div>
+              Net Position </div>
             <div style={{
-              fontFamily: 'Bebas Neue, sans-serif', fontSize: 40,
+              fontFamily:'Bebas Neue, sans-serif', fontSize: 40,
               color: net >= 0 ? 'var(--teal)' : 'var(--pink)', lineHeight: 1,
               filter: net >= 0 ? 'drop-shadow(0 0 12px rgba(0,255,224,0.4))' : 'drop-shadow(0 0 12px rgba(255,31,107,0.4))',
             }}>
@@ -80,7 +79,7 @@ export default function HomePage() {
       {/* Vote needed */}
       {voting.length > 0 && (
         <>
-          <div className="section-label">⚡ vote needed ({voting.length})</div>
+          <div className="section-label">vote needed ({voting.length})</div>
           {voting.map((b: any) => (
             <Link key={b.id} href={`/bet/${b.id}/vote`} style={{ textDecoration: 'none' }}>
               <div style={{
@@ -90,10 +89,9 @@ export default function HomePage() {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1, marginRight: 12 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}>
-                      🗳️ Cast your verdict
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}> ️ Cast your verdict
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4 }}>{b.text}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color:'var(--text)', lineHeight: 1.4 }}>{b.text}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{b.subject?.display_name} · ${b.stake_amount}</div>
                   </div>
                   <div style={{
@@ -111,7 +109,7 @@ export default function HomePage() {
       {/* Pending invites */}
       {invites.length > 0 && (
         <>
-          <div className="section-label">📬 invites ({invites.length})</div>
+          <div className="section-label">invites ({invites.length})</div>
           {invites.map((b: any) => (
             <Link key={b.id} href={`/bet/${b.id}`} style={{ textDecoration: 'none' }}>
               <div style={{
@@ -141,7 +139,7 @@ export default function HomePage() {
       {/* Active bets */}
       {active.length > 0 && (
         <>
-          <div className="section-label">🔥 active bets</div>
+          <div className="section-label">active bets</div>
           {active.map((b: any) => <BetCard key={b.id} bet={b} userId={user.id} />)}
         </>
       )}
@@ -149,7 +147,7 @@ export default function HomePage() {
       {/* Settled */}
       {bets.filter((b: any) => b.status === 'settled' || b.status === 'nullified').length > 0 && (
         <>
-          <div className="section-label" style={{ marginTop: 8 }}>📋 settled</div>
+          <div className="section-label" style={{ marginTop: 8 }}>settled</div>
           {bets.filter((b: any) => b.status === 'settled' || b.status === 'nullified').slice(0, 5).map((b: any) => (
             <Link key={b.id} href={`/bet/${b.id}`} style={{ textDecoration: 'none' }}>
               <div style={{
@@ -158,7 +156,7 @@ export default function HomePage() {
               }}>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>{b.text}</div>
                 <div style={{ fontSize: 11, color: b.status === 'nullified' ? 'var(--text-faint)' : b.winning_side === 'yes' ? 'var(--teal)' : 'var(--pink)' }}>
-                  {b.status === 'nullified' ? '— Nullified' : b.winning_side === 'yes' ? '✓ YES won' : '✗ NO won'}
+                  {b.status === 'nullified' ? '— Nullified' : b.winning_side === 'yes' ? 'YES won' : 'NO won'}
                 </div>
               </div>
             </Link>
@@ -238,14 +236,14 @@ function MiniStat({ val, label, color }: { val: number; label: string; color: st
 function EmptyState({ name }: { name: string }) {
   return (
     <div style={{ textAlign: 'center', padding: '50px 20px' }}>
-      <div style={{ fontSize: 64, marginBottom: 16, animation: 'flamingo-bob 3s ease-in-out infinite' }}>🦩</div>
+      <div style={{ fontSize: 64, marginBottom: 16, animation: 'flamingo-bob 3s ease-in-out infinite' }}></div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--text)', marginBottom: 8 }}>
         No bets yet, {name || 'champ'}
       </div>
       <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24 }}>
-        Hit the 🔒 button and start some drama
+        Hit the button and start some drama
       </div>
-      <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-faint)', transform: 'rotate(-1deg)' }}>
+      <div style={{ fontFamily:'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-faint)', transform: 'rotate(-1deg)' }}>
         your friends won't bet themselves
       </div>
     </div>
@@ -255,7 +253,7 @@ function EmptyState({ name }: { name: string }) {
 function Loader() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80dvh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 48, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>🦩</div>
+      <div style={{ fontSize: 48, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}></div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, color: 'var(--text-muted)', letterSpacing: 2 }}>LOADING THE DRAMA...</div>
     </div>
   )
