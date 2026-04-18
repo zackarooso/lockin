@@ -28,7 +28,7 @@ export default function ScorecardPage() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80dvh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>💸</div>
+      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}></div>
     </div>
   )
 
@@ -55,13 +55,12 @@ export default function ScorecardPage() {
           <span style={{ color: 'var(--text)' }}>Scorecard</span>
         </div>
         <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 11, color: 'var(--text-muted)', marginTop: 4, transform: 'rotate(-1deg)' }}>
-          receipts don't lie 🧾
-        </div>
+          receipts don't lie </div>
       </div>
 
       {/* Net position hero */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--surface), rgba(255,31,107,0.08))',
+        background:'linear-gradient(135deg, var(--surface), rgba(255,31,107,0.08))',
         border: '1px solid rgba(255,31,107,0.25)',
         borderRadius: 24, padding: '28px 24px', marginBottom: 20,
         textAlign: 'center', position: 'relative', overflow: 'hidden',
@@ -92,10 +91,10 @@ export default function ScorecardPage() {
 
       {/* 4-stat grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
-        <StatCard label="Total Won" value={`$${totalWon.toFixed(0)}`} color="var(--teal)" icon="🏆" />
-        <StatCard label="Total Lost" value={`$${totalLost.toFixed(0)}`} color="var(--pink)" icon="💸" />
-        <StatCard label="Win Rate" value={`${winRate}%`} color={winRate >= 50 ? 'var(--teal)' : 'var(--pink)'} icon="📊" />
-        <StatCard label="Total Bets" value={ledger.length.toString()} color="var(--white)" icon="🎰" />
+        <StatCard label="Total Won" value={`$${totalWon.toFixed(0)}`} color="var(--teal)" icon="" />
+        <StatCard label="Total Lost" value={`$${totalLost.toFixed(0)}`} color="var(--pink)" icon="" />
+        <StatCard label="Win Rate" value={`${winRate}%`} color={winRate >= 50 ? 'var(--teal)' : 'var(--pink)'} icon="" />
+        <StatCard label="Total Bets" value={ledger.length.toString()} color="var(--white)" icon="" />
       </div>
 
       {/* Ferrari bar - win vs loss visual */}
@@ -119,7 +118,7 @@ export default function ScorecardPage() {
       {/* Outstanding IOUs */}
       {outstanding.length > 0 && (
         <>
-          <div className="section-label">💰 settle up</div>
+          <div className="section-label">settle up</div>
           {outstanding.map((e: any) => (
             <div key={e.id} style={{
               background: 'var(--surface)',
@@ -141,8 +140,7 @@ export default function ScorecardPage() {
                 borderRadius: 8, padding: '8px 14px', color: 'var(--text-muted)',
                 fontSize: 11, fontWeight: 600, cursor: 'pointer',
                 fontFamily: 'Permanent Marker, cursive', whiteSpace: 'nowrap',
-              }}>
-                ✓ paid
+              }}> paid
               </button>
             </div>
           ))}
@@ -152,7 +150,7 @@ export default function ScorecardPage() {
       {/* History */}
       {ledger.length > 0 && (
         <>
-          <div className="section-label">📋 history</div>
+          <div className="section-label">history</div>
           {ledger.map((e: any) => (
             <div key={e.id} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -164,7 +162,7 @@ export default function ScorecardPage() {
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>
                   {new Date(e.created_at).toLocaleDateString()}
-                  {e.settled_irl ? ' · ✓ settled' : ''}
+                  {e.settled_irl ? '· settled' : ''}
                 </div>
               </div>
               <div style={{
@@ -180,7 +178,7 @@ export default function ScorecardPage() {
 
       {ledger.length === 0 && (
         <div style={{ textAlign: 'center', padding: '50px 20px' }}>
-          <div style={{ fontSize: 60, marginBottom: 16, animation: 'flamingo-bob 3s ease-in-out infinite' }}>🦩</div>
+          <div style={{ fontSize: 60, marginBottom: 16, animation: 'flamingo-bob 3s ease-in-out infinite' }}></div>
           <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--text)', marginBottom: 8 }}>Clean Slate</div>
           <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 13, color: 'var(--text-muted)' }}>
             no bets settled yet.<br />get in the game.
@@ -206,12 +204,12 @@ function StatCard({ label, value, color, icon }: any) {
 }
 
 function getNetComment(net: number) {
-  if (net > 500)  return 'ferrari money fr fr 🏎️'
-  if (net > 200)  return 'balling out 🦩'
+  if (net > 500)  return 'ferrari money fr fr ️'
+  if (net > 200)  return 'balling out'
   if (net > 50)   return 'up bad in the best way'
-  if (net > 0)    return 'slightly ahead 📈'
+  if (net > 0)    return 'slightly ahead'
   if (net === 0)  return 'dead even. boring.'
-  if (net > -50)  return 'a lil rough 😬'
+  if (net > -50)  return 'a lil rough'
   if (net > -200) return 'take the L. learn from it.'
-  return 'absolutely cooked 🔥'
+  return 'absolutely cooked'
 }
