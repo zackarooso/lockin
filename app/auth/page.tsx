@@ -50,7 +50,7 @@ function AuthInner() {
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: '-10%', right: '-20%', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,31,107,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ fontSize: 80, marginBottom: 8, animation: 'flamingo-bob 3s ease-in-out infinite', filter: 'drop-shadow(0 0 30px rgba(255,31,107,0.5))' }}>🦩</div>
+      <div style={{ fontSize: 80, marginBottom: 8, animation: 'flamingo-bob 3s ease-in-out infinite', filter: 'drop-shadow(0 0 30px rgba(255,31,107,0.5))' }}></div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, letterSpacing: 6, background: 'linear-gradient(135deg, #FF0055, #FF1F6B, #FF6FA0, #00FFE0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 0.9, marginBottom: 4 }}>LOCK IN</div>
       <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 15, color: 'rgba(255,31,107,0.7)', marginBottom: redirectTo !== '/' ? 16 : 48, transform: 'rotate(-2deg)', textAlign: 'center', lineHeight: 1.4 }}>
         put money on it. let your friends judge you.
@@ -76,7 +76,7 @@ function AuthInner() {
         {step === 'name' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ fontSize: 40, marginBottom: 8 }}>✍️</div>
+              <div style={{ fontSize: 40, marginBottom: 8 }}></div>
               <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--text)', marginBottom: 6, letterSpacing: 1 }}>What do they call you?</div>
               <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>This shows up on your bets.</p>
             </div>
@@ -102,7 +102,7 @@ export default function AuthPage() {
   return (
     <Suspense fallback={
       <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: 48 }}>🦩</div>
+        <div style={{ fontSize: 48 }}></div>
       </div>
     }>
       <AuthInner />
