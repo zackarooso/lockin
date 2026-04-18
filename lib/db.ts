@@ -1,31 +1,60 @@
 import { Pool } from 'pg'
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false })
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+})
+
+let _initialized = false
+
+export async function initDb() {
+  if (_initialized) return
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY, phone TEXT UNIQUE NOT NULL,
+      display_name TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS bets (
+      id SERIAL PRIMARY KEY, creator_user_id INT, subject_user_id INT,
+      about_self BOOLEAN DEFAULT true, creator_side TEXT DEFAULT 'yes',
+      text TEXT NOT NULL, stake_amount NUMERIC DEFAULT 0,
+      join_deadline TIMESTAMPTZ NOT NULL, end_time TIMESTAMPTZ NOT NULL,
+      proof_photo BOOLEAN DEFAULT false, proof_video BOOLEAN DEFAULT false,
+      proof_geolocation BOOLEAN DEFAULT false, status TEXT DEFAULT 'open',
+      winning_side TEXT, nullified_reason TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS bet_participants (
+      id SERIAL PRIMARY KEY, bet_id INT, user_id INT,
+      side TEXT NOT NULL, amount NUMERIC DEFAULT 0,
+      joined_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(bet_id, user_id)
+    );
+    CREATE TABLE IF NOT EXISTS proof_submissions (
+      id SERIAL PRIMARY KEY, bet_id INT, user_id INT,
+      photo_url TEXT, video_url TEXT, latitude NUMERIC, longitude NUMERIC,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS votes (
+      id SERIAL PRIMARY KEY, bet_id INT, voter_user_id INT,
+      vote TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(bet_id, voter_user_id)
+    );
+    CREATE TABLE IF NOT EXISTS ledger_entries (
+      id SERIAL PRIMARY KEY, bet_id INT, user_id INT,
+      type TEXT NOT NULL, amount NUMERIC DEFAULT 0,
+      settled_irl BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `)
+  _initialized = true
+}
 
 async function q(sql: string, args: any[] = []) {
   const r = await pool.query(sql, args)
   return r.rows
 }
 
-async function run(sql: string, args: any[] = []) {
-  const r = await pool.query(sql, args)
-  return { lastInsertRowid: r.rows[0]?.id, changes: r.rowCount }
-}
-
-export async function initDb() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, phone TEXT UNIQUE NOT NULL, display_name TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
-    CREATE TABLE IF NOT EXISTS bets (id SERIAL PRIMARY KEY, creator_user_id INT, subject_user_id INT, about_self BOOLEAN DEFAULT true, creator_side TEXT DEFAULT 'yes', text TEXT NOT NULL, stake_amount NUMERIC DEFAULT 0, join_deadline TIMESTAMPTZ NOT NULL, end_time TIMESTAMPTZ NOT NULL, proof_photo BOOLEAN DEFAULT false, proof_video BOOLEAN DEFAULT false, proof_geolocation BOOLEAN DEFAULT false, status TEXT DEFAULT 'open', winning_side TEXT, nullified_reason TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
-    CREATE TABLE IF NOT EXISTS bet_participants (id SERIAL PRIMARY KEY, bet_id INT, user_id INT, side TEXT NOT NULL, amount NUMERIC DEFAULT 0, joined_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(bet_id, user_id));
-    CREATE TABLE IF NOT EXISTS proof_submissions (id SERIAL PRIMARY KEY, bet_id INT, user_id INT, photo_url TEXT, video_url TEXT, latitude NUMERIC, longitude NUMERIC, created_at TIMESTAMPTZ DEFAULT NOW());
-    CREATE TABLE IF NOT EXISTS votes (id SERIAL PRIMARY KEY, bet_id INT, voter_user_id INT, vote TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(bet_id, voter_user_id));
-    CREATE TABLE IF NOT EXISTS ledger_entries (id SERIAL PRIMARY KEY, bet_id INT, user_id INT, type TEXT NOT NULL, amount NUMERIC DEFAULT 0, settled_irl BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW());
-  `)
-}
-
 export async function findOrCreateUser(phone: string, displayName?: string | null) {
-  const existing = await q('SELECT * FROM users WHERE phone = $1', [phone])
-  if (existing[0]) return existing[0]
+  const rows = await q('SELECT * FROM users WHERE phone = $1', [phone])
+  if (rows[0]) return rows[0]
   const r = await q('INSERT INTO users (phone, display_name) VALUES ($1, $2) RETURNING *', [phone, displayName || null])
   return r[0]
 }
@@ -73,13 +102,13 @@ export async function getBetsForUser(userId: number) {
 export async function addParticipant(betId: number, userId: number, side: string, amount: number) {
   try {
     const r = await pool.query('INSERT INTO bet_participants (bet_id,user_id,side,amount) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING', [betId, userId, side, amount])
-    return { changes: r.rowCount }
+    return { changes: r.rowCount || 0 }
   } catch { return { changes: 0 } }
 }
 
 export async function updateBetStatus(id: number, status: string, extra: any = {}) {
-  if (extra.winning_side) await pool.query('UPDATE bets SET status=$1, winning_side=$2 WHERE id=$3', [status, extra.winning_side, id])
-  else if (extra.nullified_reason) await pool.query('UPDATE bets SET status=$1, nullified_reason=$2 WHERE id=$3', [status, extra.nullified_reason, id])
+  if (extra.winning_side) await pool.query('UPDATE bets SET status=$1,winning_side=$2 WHERE id=$3', [status, extra.winning_side, id])
+  else if (extra.nullified_reason) await pool.query('UPDATE bets SET status=$1,nullified_reason=$2 WHERE id=$3', [status, extra.nullified_reason, id])
   else await pool.query('UPDATE bets SET status=$1 WHERE id=$2', [status, id])
 }
 
@@ -87,8 +116,11 @@ export async function castVote(betId: number, voterId: number, vote: string) {
   try { await pool.query('INSERT INTO votes (bet_id,voter_user_id,vote) VALUES ($1,$2,$3)', [betId, voterId, vote]); return true } catch { return false }
 }
 
-export async function getVotes(betId: number) { return q('SELECT * FROM votes WHERE bet_id = $1', [betId]) }
-export async function hasVoted(betId: number, userId: number) { const r = await q('SELECT id FROM votes WHERE bet_id=$1 AND voter_user_id=$2', [betId, userId]); return r.length > 0 }
+export async function getVotes(betId: number) { return q('SELECT * FROM votes WHERE bet_id=$1', [betId]) }
+export async function hasVoted(betId: number, userId: number) {
+  const r = await q('SELECT id FROM votes WHERE bet_id=$1 AND voter_user_id=$2', [betId, userId])
+  return r.length > 0
+}
 
 export async function addLedgerEntry(betId: number, userId: number, type: string, amount: number) {
   await pool.query('INSERT INTO ledger_entries (bet_id,user_id,type,amount) VALUES ($1,$2,$3,$4)', [betId, userId, type, amount])
