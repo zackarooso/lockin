@@ -68,7 +68,7 @@ export default function CreatePage() {
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>Create<br/>A Bet</div>
         <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-muted)', marginTop: 6, transform: 'rotate(-1deg)'}}>
-          make it spicy ️
+          make it spicy 
         </div>
       </div>
 
