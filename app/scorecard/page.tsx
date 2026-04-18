@@ -162,7 +162,7 @@ export default function ScorecardPage() {
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-faint)' }}>
                   {new Date(e.created_at).toLocaleDateString()}
-                  {e.settled_irl ? '· settled' : ''}
+                  {e.settled_irl ? ' settled' : ''}
                 </div>
               </div>
               <div style={{
@@ -204,7 +204,7 @@ function StatCard({ label, value, color, icon }: any) {
 }
 
 function getNetComment(net: number) {
-  if (net > 500)  return 'ferrari money fr fr ️'
+  if (net > 500)  return 'ferrari money fr fr '
   if (net > 200)  return 'balling out'
   if (net > 50)   return 'up bad in the best way'
   if (net > 0)    return 'slightly ahead'
