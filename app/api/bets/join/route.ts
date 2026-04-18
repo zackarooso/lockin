@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth'
-import { getBetById, addParticipant, updateBetStatus } from '@/lib/db'
+import { getBetById, addParticipant, updateBetStatus, initDb } from '@/lib/db'
 export async function POST(req: NextRequest) {
   try {
+    await initDb()
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { bet_id, side, amount } = await req.json()
