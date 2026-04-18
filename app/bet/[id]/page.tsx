@@ -77,7 +77,7 @@ export default function BetDetailPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 4, background: 'linear-gradient(to bottom, var(--pink), var(--red))' }} />
         <div style={{ paddingLeft: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {bet.about_self ? ' Self bet' : ` About ${bet.subject?.display_name || 'someone'}`}
+            {bet.about_self ? 'Self Bet' : ` About ${bet.subject?.display_name || 'someone'}`}
           </div>
           <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, marginBottom: 16 }}>
             {bet.text}
@@ -258,11 +258,11 @@ export default function BetDetailPage() {
 
 function StatusBadge({ status, winningSide }: { status: string; winningSide?: string }) {
   const map: any = {
-    open:      { label: 'Open',      bg: 'rgba(0,255,224,0.12)',  color: 'var(--teal)' },
-    active:    { label: '¥ Active', bg: 'rgba(255,31,107,0.12)', color: 'var(--pink)' },
-    voting:    { label: '³¯¸ Voting', bg: 'rgba(255,215,0,0.12)',  color: 'var(--gold)' },
+    open:      { label: 'OPEN',      bg: 'rgba(0,255,224,0.12)',  color: 'var(--teal)' },
+    active:    { label: 'ACTIVE', bg: 'rgba(255,31,107,0.12)', color: 'var(--pink)' },
+    voting:    { label: 'VOTING', bg: 'rgba(255,215,0,0.12)',  color: 'var(--gold)' },
     settled:   { label: ` ${winningSide?.toUpperCase()} WON`, bg: 'rgba(0,255,224,0.08)', color: 'var(--teal)' },
-    nullified: { label: '¢ Nullified', bg: 'var(--surface-2)', color: 'var(--text-muted)' },
+    nullified: { label: 'NULLIFIED', bg: 'var(--surface-2)', color: 'var(--text-muted)' },
   }
   const s = map[status] || map.open
   return (
