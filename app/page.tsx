@@ -92,7 +92,7 @@ export default function HomePage() {
                     <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}>  Cast your verdict
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 600, color:'var(--text)', lineHeight: 1.4 }}>{b.text}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{b.subject?.display_name} · ${b.stake_amount}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{b.subject?.display_name} ${b.stake_amount}</div>
                   </div>
                   <div style={{
                     background: 'var(--gold)', color: '#000',
@@ -121,7 +121,7 @@ export default function HomePage() {
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>{b.text}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                    from {b.creator?.display_name || 'someone'} · ${b.stake_amount}
+                    from {b.creator?.display_name || 'someone'} ${b.stake_amount}
                   </div>
                 </div>
                 <div style={{
