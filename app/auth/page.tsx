@@ -13,7 +13,7 @@ function AuthInner() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  function formatPhone(val) {
+  function formatPhone(val: string) {
     const digits = val.replace(/\D/g, '')
     setRawPhone(digits)
     if (digits.length <= 3) return digits
