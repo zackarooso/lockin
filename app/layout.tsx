@@ -7,11 +7,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="theme-color" content="#07030F" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <title>Lock In 🔒</title>
+        <title>Lock In ð</title>
       </head>
       <body>
         {/* Desktop block */}
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             background: 'linear-gradient(135deg, #FF1F6B, #00FFE0)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>LOCK IN</div>
-          <p style={{ color: '#8878AA', fontSize: 14 }}>📱 Mobile only. Open on your phone.</p>
+          <p style={{ color: '#8878AA', fontSize: 14 }}>ð± Mobile only. Open on your phone.</p>
           <p style={{ color: '#3D3260', fontSize: 12, marginTop: 8 }}>
             (or shrink your browser window below 600px)
           </p>
@@ -70,7 +71,7 @@ function AppHeader() {
           fontSize: 22,
           display: 'inline-block',
           animation: 'flamingo-bob 3s ease-in-out infinite',
-        }}>🦩</span>
+        }}>ð¦©</span>
         <span style={{
           fontFamily: 'Bebas Neue, sans-serif',
           fontSize: 26,
