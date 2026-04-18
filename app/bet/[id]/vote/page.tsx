@@ -28,7 +28,7 @@ export default function VotePage() {
     })
     setLoading(false)
     if (res.ok) {
-      const msgs: any = { yes: 'Voted YES ✓ bold move', no: 'Voted NO ✗ cold blooded', nullify: 'Nullified 🤷 coward' }
+      const msgs: any = { yes: 'Voted YES bold move', no: 'Voted NO cold blooded', nullify: 'Nullified coward' }
       showToast(msgs[vote])
       setTimeout(() => router.replace('/'), 1400)
     } else {
@@ -40,7 +40,7 @@ export default function VotePage() {
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70dvh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>🦩</div>
+      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}></div>
     </div>
   )
 
@@ -51,7 +51,7 @@ export default function VotePage() {
 
   if (isSubject) return (
     <div className="screen-pad" style={{ textAlign: 'center', paddingTop: 60 }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}>🙈</div>
+      <div style={{ fontSize: 64, marginBottom: 16 }}></div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: 'var(--text)', marginBottom: 8 }}>
         You can't vote on yourself
       </div>
@@ -99,14 +99,13 @@ export default function VotePage() {
       {/* Proof */}
       {proofs?.length > 0 ? (
         <div style={{ marginBottom: 20 }}>
-          <div className="section-label">📎 Evidence</div>
+          <div className="section-label">Evidence</div>
           {proofs.map((p: any) => (
             <div key={p.id} style={{ marginBottom: 10 }}>
               {p.photo_url && <img src={p.photo_url} alt="proof" style={{ width: '100%', borderRadius: 14, objectFit: 'cover', maxHeight: 240, border: '1px solid var(--border)' }} />}
               {p.video_url && <video src={p.video_url} controls style={{ width: '100%', borderRadius: 14 }} />}
               {p.latitude && (
-                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)' }}>
-                  📍 {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
+                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)'}}> {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
                   <a href={`https://maps.google.com/?q=${p.latitude},${p.longitude}`} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>Map →</a>
                 </div>
               )}
@@ -118,7 +117,7 @@ export default function VotePage() {
           background: 'var(--surface-2)', border: '1px dashed rgba(255,31,107,0.2)',
           borderRadius: 14, padding: 24, marginBottom: 20, textAlign: 'center',
         }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>🕵️</div>
+          <div style={{ fontSize: 28, marginBottom: 6 }}></div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>No proof submitted yet</div>
           <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
             judge based on vibes
@@ -134,13 +133,13 @@ export default function VotePage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <VoteBtn
-            label="✓ YES" sub="they followed through, legend"
+            label="YES" sub="they followed through, legend"
             vote="yes" selected={selected} disabled={loading}
             color="var(--teal)" bg="var(--teal-dim)" border="rgba(0,255,224,0.4)"
             onClick={castVote}
           />
           <VoteBtn
-            label="✗ NO" sub="nope. not even close."
+            label="NO" sub="nope. not even close."
             vote="no" selected={selected} disabled={loading}
             color="var(--pink)" bg="var(--pink-dim)" border="rgba(255,31,107,0.4)"
             onClick={castVote}
