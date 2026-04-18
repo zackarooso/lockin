@@ -67,8 +67,8 @@ export default function CreatePage() {
           background: 'linear-gradient(135deg, #FF0055, #FF6FA0)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>Create<br/>A Bet</div>
-        <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-muted)', marginTop: 6, transform: 'rotate(-1deg)' }}>
-          make it spicy 🌶️
+        <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-muted)', marginTop: 6, transform: 'rotate(-1deg)'}}>
+          make it spicy ️
         </div>
       </div>
 
@@ -78,8 +78,8 @@ export default function CreatePage() {
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10,
         }}>
-          <SubjectBtn label="🙋 Me" sub="I'm the subject" active={subject === 'me'} onClick={() => setSubject('me')} />
-          <SubjectBtn label="👉 A Friend" sub="they're the subject" active={subject === 'friend'} onClick={() => setSubject('friend')} />
+          <SubjectBtn label="Me" sub="I'm the subject" active={subject === 'me'} onClick={() => setSubject('me')} />
+          <SubjectBtn label="A Friend" sub="they're the subject" active={subject === 'friend'} onClick={() => setSubject('friend')} />
         </div>
       </div>
 
@@ -121,16 +121,16 @@ export default function CreatePage() {
         <div style={{ marginBottom: 20 }}>
           <label className="form-label">I'm betting they will...</label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <SideBtn label="✓ YES" sub="they'll do it" active={creatorSide === 'yes'} color="teal" onClick={() => setCreatorSide('yes')} />
-            <SideBtn label="✗ NO" sub="they won't" active={creatorSide === 'no'} color="pink" onClick={() => setCreatorSide('no')} />
+            <SideBtn label="YES" sub="they'll do it" active={creatorSide === 'yes'} color="teal" onClick={() => setCreatorSide('yes')} />
+            <SideBtn label="NO" sub="they won't" active={creatorSide === 'no'} color="pink" onClick={() => setCreatorSide('no')} />
           </div>
         </div>
       )}
 
       {/* Stake */}
       <div style={{ marginBottom: 20 }}>
-        <label className="form-label">Stake Amount 💸</label>
-        <div style={{ position: 'relative' }}>
+        <label className="form-label">Stake Amount </label>
+        <div style={{ position:'relative' }}>
           <span style={{
             position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)',
             fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: 'var(--pink)',
@@ -166,13 +166,13 @@ export default function CreatePage() {
 
       {/* Proof */}
       <div style={{ marginBottom: 28 }}>
-        <label className="form-label">Required Proof 📎</label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <label className="form-label">Required Proof </label>
+        <div style={{ display:'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
-            { key: 'none',  icon: '🚫', label: 'None',      sub: 'honor system lol' },
-            { key: 'photo', icon: '📷', label: 'Photo',     sub: 'pics or it didnt happen' },
-            { key: 'video', icon: '📹', label: 'Video',     sub: 'full receipts' },
-            { key: 'geo',   icon: '📍', label: 'Location',  sub: 'gps don\'t lie' },
+            { key: 'none',  icon: '', label: 'None',      sub: 'honor system lol' },
+            { key: 'photo', icon: '', label: 'Photo',     sub: 'pics or it didnt happen' },
+            { key: 'video', icon: '', label: 'Video',     sub: 'full receipts' },
+            { key: 'geo',   icon: '', label: 'Location',  sub: 'gps don\'t lie' },
           ].map(({ key, icon, label, sub }) => (
             <button key={key} onClick={() => toggleProof(key)} style={{
               background: proof.has(key) ? 'var(--pink-dim)' : 'var(--surface-2)',
@@ -200,7 +200,7 @@ export default function CreatePage() {
       )}
 
       <button className="btn-primary" onClick={handleCreate} disabled={loading} style={{ fontSize: 26, padding: 20 }}>
-        {loading ? '🔒 Locking in...' : '🔒 LOCK IT IN'}
+        {loading ? 'Locking in...' : 'LOCK IT IN'}
       </button>
     </div>
   )
@@ -238,12 +238,12 @@ function SideBtn({ label, sub, active, color, onClick }: { label: string; sub: s
 }
 
 function getStakeComment(amount: number) {
-  if (amount < 5)   return '🥜 bet with peanuts, win peanuts'
-  if (amount < 20)  return '😐 okay... modest energy'
-  if (amount < 50)  return '🔥 now we\'re talking'
-  if (amount < 100) return '💸 SERIOUS commitment'
-  if (amount < 500) return '🏎️ ferrari energy right here'
-  return '🦩 absolute MANIAC. respect.'
+  if (amount < 5)   return 'bet with peanuts, win peanuts'
+  if (amount < 20)  return 'okay... modest energy'
+  if (amount < 50)  return 'now we\'re talking'
+  if (amount < 100) return 'SERIOUS commitment'
+  if (amount < 500) return '️ ferrari energy right here'
+  return 'absolute MANIAC. respect.'
 }
 
 function daysFromNow(days: number) {
