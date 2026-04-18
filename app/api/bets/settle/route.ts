@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth'
-import { markSettled } from '@/lib/db'
+import { markSettled, initDb } from '@/lib/db'
 export async function POST(req: NextRequest) {
   try {
+    await initDb()
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { entry_id } = await req.json()
