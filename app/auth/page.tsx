@@ -57,7 +57,7 @@ function AuthInner() {
       </div>
       {redirectTo !== '/' && (
         <div style={{ background: 'rgba(0,255,224,0.08)', border: '1px solid rgba(0,255,224,0.3)', borderRadius: 12, padding: '10px 16px', marginBottom: 28, textAlign: 'center', fontSize: 13, color: 'var(--teal)' }}>
-          You have been challenged — sign up to join the bet
+          You have been challenged  sign up to join the bet
         </div>
       )}
       <div style={{ width: '100%', maxWidth: 320 }}>
