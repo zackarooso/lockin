@@ -46,8 +46,8 @@ export default function VotePage() {
 
   const { bet, proofs, currentUserId } = data
   const isSubject = bet.subject_user_id === currentUserId
-  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + p.amount, 0) || 0
-  const noPool  = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + p.amount, 0) || 0
+  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
+  const noPool  = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
 
   if (isSubject) return (
     <div className="screen-pad" style={{ textAlign: 'center', paddingTop: 60 }}>
