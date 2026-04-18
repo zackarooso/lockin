@@ -65,7 +65,7 @@ export default function HomePage() {
               {net >= 0 ? '+' : '-'}${Math.abs(net).toFixed(0)}
             </div>
             <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
-              tap for full scorecard →
+              tap for full scorecard 
             </div>
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
@@ -89,7 +89,7 @@ export default function HomePage() {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1, marginRight: 12 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}> ️ Cast your verdict
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--gold)', textTransform: 'uppercase', marginBottom: 6 }}>  Cast your verdict
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 600, color:'var(--text)', lineHeight: 1.4 }}>{b.text}</div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{b.subject?.display_name} · ${b.stake_amount}</div>
@@ -156,7 +156,7 @@ export default function HomePage() {
               }}>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>{b.text}</div>
                 <div style={{ fontSize: 11, color: b.status === 'nullified' ? 'var(--text-faint)' : b.winning_side === 'yes' ? 'var(--teal)' : 'var(--pink)' }}>
-                  {b.status === 'nullified' ? '— Nullified' : b.winning_side === 'yes' ? 'YES won' : 'NO won'}
+                  {b.status === 'nullified' ? ' Nullified' : b.winning_side === 'yes' ? 'YES won' : 'NO won'}
                 </div>
               </div>
             </Link>
