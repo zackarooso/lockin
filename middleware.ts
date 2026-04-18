@@ -3,21 +3,15 @@ import { getSessionFromRequest } from '@/lib/auth'
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-
-  if (
-    pathname.startsWith('/auth') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/_next') ||
-    pathname.includes('.')
-  ) {
+  if (pathname.startsWith('/auth') || pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.includes('.')) {
     return NextResponse.next()
   }
-
   const session = await getSessionFromRequest(req)
   if (!session) {
-    return NextResponse.redirect(new URL('/auth', req.url))
+    const loginUrl = new URL('/auth', req.url)
+    loginUrl.searchParams.set('from', pathname)
+    return NextResponse.redirect(loginUrl)
   }
-
   return NextResponse.next()
 }
 
