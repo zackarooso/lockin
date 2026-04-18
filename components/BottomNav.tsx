@@ -19,7 +19,7 @@ export default function BottomNav() {
       position: 'relative',
       zIndex: 100,
     }}>
-      <NavBtn href="/" active={isHome} icon="🏠" label="Feed" />
+      <NavBtn href="/" active={isHome} icon="" label="Feed" />
 
       {/* FAB */}
       <Link href="/create" style={{ flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
@@ -35,12 +35,10 @@ export default function BottomNav() {
           boxShadow: '0 4px 24px rgba(255,31,107,0.6), 0 0 0 1px rgba(255,31,107,0.3)',
           animation: 'pulse-glow 3s ease-in-out infinite',
           transition: 'transform var(--transition)',
-        }}>
-          🔒
-        </button>
+        }}> </button>
       </Link>
 
-      <NavBtn href="/scorecard" active={isScore} icon="💰" label="Score" />
+      <NavBtn href="/scorecard" active={isScore} icon="" label="Score" />
     </nav>
   )
 }
