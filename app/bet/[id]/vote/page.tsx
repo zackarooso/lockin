@@ -106,7 +106,7 @@ export default function VotePage() {
               {p.video_url && <video src={p.video_url} controls style={{ width: '100%', borderRadius: 14 }} />}
               {p.latitude && (
                 <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)'}}> {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
-                  <a href={`https://maps.google.com/?q=${p.latitude},${p.longitude}`} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>Map →</a>
+                  <a href={`https://maps.google.com/?q=${p.latitude},${p.longitude}`} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>Map </a>
                 </div>
               )}
             </div>
@@ -145,7 +145,7 @@ export default function VotePage() {
             onClick={castVote}
           />
           <VoteBtn
-            label="— NULLIFY" sub="can't tell. no receipts."
+            label=" NULLIFY" sub="can't tell. no receipts."
             vote="nullify" selected={selected} disabled={loading}
             color="var(--text-muted)" bg="var(--white-dim)" border="var(--border)"
             onClick={castVote}
@@ -154,7 +154,7 @@ export default function VotePage() {
       </div>
 
       <p style={{ fontSize: 10, color: 'var(--text-faint)', textAlign: 'center', lineHeight: 1.7, fontFamily: 'Permanent Marker, cursive' }}>
-        majority wins · ties = nullified · the subject can't vote
+        majority wins  ties = nullified  the subject can't vote
       </p>
     </div>
   )
