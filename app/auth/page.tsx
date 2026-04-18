@@ -1,17 +1,18 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function AuthPage() {
   const router = useRouter()
-  const from = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('from') : null
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
+
   const [step, setStep] = useState<'phone' | 'name'>('phone')
   const [phone, setPhone] = useState('')
   const [rawPhone, setRawPhone] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [isNew, setIsNew] = useState(false)
 
   function formatPhone(val: string) {
     const digits = val.replace(/\D/g, '')
@@ -22,9 +23,8 @@ export default function AuthPage() {
   }
 
   async function handlePhone() {
-    if (rawPhone.length < 10) { setError('That number ain\'t right chief'); return }
+    if (rawPhone.length < 10) { setError("That number ain't right chief"); return }
     setLoading(true); setError('')
-
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -33,111 +33,68 @@ export default function AuthPage() {
     const data = await res.json()
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
-
     if (data.isNew || !data.user.display_name) {
-      setIsNew(true)
       setStep('name')
     } else {
-      router.replace(from || '/')
+      router.replace(redirectTo)
     }
   }
 
   async function handleName() {
     if (!displayName.trim()) { setError('Give us a name'); return }
     setLoading(true); setError('')
-
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: rawPhone, display_name: displayName.trim() }),
     })
     setLoading(false)
-    if (res.ok) router.replace(from || '/')
+    if (res.ok) router.replace(redirectTo)
     else { const d = await res.json(); setError(d.error) }
   }
 
   return (
     <div style={{
-      minHeight: '100dvh',
-      background: 'var(--bg)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '32px 24px',
-      position: 'relative',
-      overflow: 'hidden',
+      minHeight: '100dvh', background: 'var(--bg)',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      padding: '32px 24px', position: 'relative', overflow: 'hidden',
     }}>
+      <div style={{ position: 'absolute', top: '-10%', right: '-20%', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,31,107,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '5%', left: '-15%', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,255,224,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-      {/* Background decoration */}
-      <div style={{
-        position: 'absolute', top: '-10%', right: '-20%',
-        width: 280, height: 280, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255,31,107,0.15) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '5%', left: '-15%',
-        width: 200, height: 200, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,255,224,0.08) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+      <div style={{ fontSize: 80, marginBottom: 8, display: 'block', animation: 'flamingo-bob 3s ease-in-out infinite', filter: 'drop-shadow(0 0 30px rgba(255,31,107,0.5))' }}>🦩</div>
 
-      {/* Big flamingo */}
-      <div style={{
-        fontSize: 80,
-        marginBottom: 8,
-        display: 'block',
-        animation: 'flamingo-bob 3s ease-in-out infinite',
-        filter: 'drop-shadow(0 0 30px rgba(255,31,107,0.5))',
-      }}>ð¦©</div>
+      <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, letterSpacing: 6, background: 'linear-gradient(135deg, #FF0055, #FF1F6B, #FF6FA0, #00FFE0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 0.9, marginBottom: 4, filter: 'drop-shadow(0 0 40px rgba(255,31,107,0.3))' }}>LOCK IN</div>
 
-      {/* Logo */}
-      <div style={{
-        fontFamily: 'Bebas Neue, sans-serif',
-        fontSize: 80, letterSpacing: 6,
-        background: 'linear-gradient(135deg, #FF0055, #FF1F6B, #FF6FA0, #00FFE0)',
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        lineHeight: 0.9,
-        marginBottom: 4,
-        filter: 'drop-shadow(0 0 40px rgba(255,31,107,0.3))',
-      }}>LOCK IN</div>
-
-      {/* Tagline â Permanent Marker, chaotic */}
-      <div style={{
-        fontFamily: 'Permanent Marker, cursive',
-        fontSize: 15,
-        color: 'rgba(255,31,107,0.7)',
-        marginBottom: 48,
-        transform: 'rotate(-2deg)',
-        textAlign: 'center',
-        lineHeight: 1.4,
-      }}>
-        put money on it.<br/>let your friends judge you. ð«µ
+      <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 15, color: 'rgba(255,31,107,0.7)', marginBottom: redirectTo !== '/' ? 16 : 48, transform: 'rotate(-2deg)', textAlign: 'center', lineHeight: 1.4 }}>
+        put money on it.<br/>let your friends judge you. 🫵
       </div>
 
-      {/* Form */}
+      {redirectTo !== '/' && (
+        <div style={{ background: 'rgba(0,255,224,0.08)', border: '1px solid rgba(0,255,224,0.3)', borderRadius: 12, padding: '10px 16px', marginBottom: 28, textAlign: 'center', fontSize: 13, color: 'var(--teal)' }}>
+          🔒 You've been challenged — sign up to join the bet
+        </div>
+      )}
+
       <div style={{ width: '100%', maxWidth: 320 }}>
         {step === 'phone' && (
           <>
-            <label className="form-label">Your digits</label>
+            <label className="form-label">Your Phone Number</label>
             <input
               className="form-input"
-              type="tel"
-              value={phone}
-              placeholder="(305) 867-5309"
-              maxLength={14}
-              autoFocus
+              type="tel" value={phone} placeholder="(305) 867-5309"
+              maxLength={14} autoFocus
               onChange={e => setPhone(formatPhone(e.target.value))}
               onKeyDown={e => e.key === 'Enter' && handlePhone()}
               style={{ fontSize: 22, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 2, marginBottom: 8 }}
             />
             <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 20, textAlign: 'center' }}>
-              No password. No SMS. Just your number. ð
+              No password. No SMS. Just your number. 💅
             </p>
-            {error && <p style={errStyle}>{error}</p>}
+            {error && <p style={{ color: '#FF1F6B', fontSize: 13, marginBottom: 12, textAlign: 'center', fontFamily: 'Permanent Marker, cursive' }}>{error}</p>}
             <button className="btn-primary" onClick={handlePhone} disabled={loading}>
-              {loading ? '...' : 'ð LOCK IN'}
+              {loading ? '...' : '🔒 LOCK IN'}
             </button>
           </>
         )}
@@ -145,53 +102,35 @@ export default function AuthPage() {
         {step === 'name' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ fontSize: 40, marginBottom: 8 }}>âï¸</div>
-              <div style={{
-                fontFamily: 'Bebas Neue, sans-serif', fontSize: 28,
-                color: 'var(--text)', marginBottom: 6, letterSpacing: 1,
-              }}>What do they call you?</div>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                This shows up on your bets.
-              </p>
+              <div style={{ fontSize: 40, marginBottom: 8 }}>✍️</div>
+              <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--text)', marginBottom: 6, letterSpacing: 1 }}>
+                What do they call you?
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>This shows up on your bets.</p>
             </div>
-            <label className="form-label">Your name / alias</label>
+            <label className="form-label">Your Name / Alias</label>
             <input
               className="form-input"
-              type="text"
-              value={displayName}
-              placeholder="Big Spender"
-              autoFocus
-              autoCapitalize="words"
+              type="text" value={displayName} placeholder="Big Spender"
+              autoFocus autoCapitalize="words"
               style={{ marginBottom: 20 }}
               onChange={e => setDisplayName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleName()}
             />
-            {error && <p style={errStyle}>{error}</p>}
+            {error && <p style={{ color: '#FF1F6B', fontSize: 13, marginBottom: 12, textAlign: 'center', fontFamily: 'Permanent Marker, cursive' }}>{error}</p>}
             <button className="btn-primary" onClick={handleName} disabled={loading}>
-              {loading ? '...' : "LET'S GO ð¦©"}
+              {loading ? '...' : "LET'S GO 🦩"}
             </button>
             <button className="btn-ghost" onClick={() => setStep('phone')} style={{ marginTop: 10 }}>
-              â wrong number?
+              ← wrong number?
             </button>
           </>
         )}
       </div>
 
-      {/* Bottom decoration */}
-      <div style={{
-        position: 'absolute', bottom: 20, left: 0, right: 0,
-        textAlign: 'center',
-        fontFamily: 'Permanent Marker, cursive',
-        fontSize: 10, color: 'var(--text-faint)',
-        letterSpacing: 1,
-      }}>
-        ð° ð¦© ðï¸ no actual gambling
+      <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', fontFamily: 'Permanent Marker, cursive', fontSize: 10, color: 'var(--text-faint)', letterSpacing: 1 }}>
+        🎰 🦩 🏎️ no actual gambling
       </div>
     </div>
   )
-}
-
-const errStyle: React.CSSProperties = {
-  color: '#FF1F6B', fontSize: 13, marginBottom: 12,
-  textAlign: 'center', fontFamily: 'Permanent Marker, cursive',
 }
