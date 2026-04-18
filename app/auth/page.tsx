@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 
 export default function AuthPage() {
   const router = useRouter()
+  const from = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('from') : null
   const [step, setStep] = useState<'phone' | 'name'>('phone')
   const [phone, setPhone] = useState('')
   const [rawPhone, setRawPhone] = useState('')
@@ -37,7 +38,7 @@ export default function AuthPage() {
       setIsNew(true)
       setStep('name')
     } else {
-      router.replace('/')
+      router.replace(from || '/')
     }
   }
 
@@ -51,7 +52,7 @@ export default function AuthPage() {
       body: JSON.stringify({ phone: rawPhone, display_name: displayName.trim() }),
     })
     setLoading(false)
-    if (res.ok) router.replace('/')
+    if (res.ok) router.replace(from || '/')
     else { const d = await res.json(); setError(d.error) }
   }
 
@@ -89,7 +90,7 @@ export default function AuthPage() {
         display: 'block',
         animation: 'flamingo-bob 3s ease-in-out infinite',
         filter: 'drop-shadow(0 0 30px rgba(255,31,107,0.5))',
-      }}>🦩</div>
+      }}>ð¦©</div>
 
       {/* Logo */}
       <div style={{
@@ -102,7 +103,7 @@ export default function AuthPage() {
         filter: 'drop-shadow(0 0 40px rgba(255,31,107,0.3))',
       }}>LOCK IN</div>
 
-      {/* Tagline — Permanent Marker, chaotic */}
+      {/* Tagline â Permanent Marker, chaotic */}
       <div style={{
         fontFamily: 'Permanent Marker, cursive',
         fontSize: 15,
@@ -112,7 +113,7 @@ export default function AuthPage() {
         textAlign: 'center',
         lineHeight: 1.4,
       }}>
-        put money on it.<br/>let your friends judge you. 🫵
+        put money on it.<br/>let your friends judge you. ð«µ
       </div>
 
       {/* Form */}
@@ -132,11 +133,11 @@ export default function AuthPage() {
               style={{ fontSize: 22, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 2, marginBottom: 8 }}
             />
             <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 20, textAlign: 'center' }}>
-              No password. No SMS. Just your number. 💅
+              No password. No SMS. Just your number. ð
             </p>
             {error && <p style={errStyle}>{error}</p>}
             <button className="btn-primary" onClick={handlePhone} disabled={loading}>
-              {loading ? '...' : '🔒 LOCK IN'}
+              {loading ? '...' : 'ð LOCK IN'}
             </button>
           </>
         )}
@@ -144,7 +145,7 @@ export default function AuthPage() {
         {step === 'name' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ fontSize: 40, marginBottom: 8 }}>✍️</div>
+              <div style={{ fontSize: 40, marginBottom: 8 }}>âï¸</div>
               <div style={{
                 fontFamily: 'Bebas Neue, sans-serif', fontSize: 28,
                 color: 'var(--text)', marginBottom: 6, letterSpacing: 1,
@@ -167,10 +168,10 @@ export default function AuthPage() {
             />
             {error && <p style={errStyle}>{error}</p>}
             <button className="btn-primary" onClick={handleName} disabled={loading}>
-              {loading ? '...' : "LET'S GO 🦩"}
+              {loading ? '...' : "LET'S GO ð¦©"}
             </button>
             <button className="btn-ghost" onClick={() => setStep('phone')} style={{ marginTop: 10 }}>
-              ← wrong number?
+              â wrong number?
             </button>
           </>
         )}
@@ -184,7 +185,7 @@ export default function AuthPage() {
         fontSize: 10, color: 'var(--text-faint)',
         letterSpacing: 1,
       }}>
-        🎰 🦩 🏎️ no actual gambling
+        ð° ð¦© ðï¸ no actual gambling
       </div>
     </div>
   )
