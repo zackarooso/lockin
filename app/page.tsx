@@ -174,8 +174,8 @@ export default function HomePage() {
 function BetCard({ bet, userId }: { bet: any; userId: number }) {
   const myP = bet.participants?.find((p: any) => p.user_id === userId)
   const mySide = myP?.side || (bet.creator_user_id === userId ? bet.creator_side : null)
-  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + p.amount, 0) || 0
-  const noPool = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + p.amount, 0) || 0
+  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
+  const noPool = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
   const total = yesPool + noPool || 1
   const yesPct = Math.round(yesPool / total * 100)
 
