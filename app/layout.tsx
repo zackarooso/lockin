@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             background: 'linear-gradient(135deg, #FF1F6B, #00FFE0)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>LOCK IN</div>
-          <p style={{ color: '#8878AA', fontSize: 14 }}>ð± Mobile only. Open on your phone.</p>
+          <p style={{ color: '#8878AA', fontSize: 14 }}> Mobile only. Open on your phone.</p>
           <p style={{ color: '#3D3260', fontSize: 12, marginTop: 8 }}>
             (or shrink your browser window below 600px)
           </p>
@@ -74,7 +74,7 @@ function AppHeader() {
           fontSize: 22,
           display: 'inline-block',
           animation: 'flamingo-bob 3s ease-in-out infinite',
-        }}>ð¦©</span>
+        }}></span>
         <span style={{
           fontFamily: 'Bebas Neue, sans-serif',
           fontSize: 26,
