@@ -24,8 +24,8 @@ export default function BetDetailPage() {
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2200) }
 
   async function handleJoin() {
-    if (!joinSide) { showToast('Pick a side first ÃÂ°ÃÂÃÂ¤ÃÂ·'); return }
-    if (!joinStake || parseFloat(joinStake) <= 0) { showToast('Enter your stake ÃÂ°ÃÂÃÂÃÂ¸'); return }
+    if (!joinSide) { showToast('Pick a side first ¤·'); return }
+    if (!joinStake || parseFloat(joinStake) <= 0) { showToast('Enter your stake ¸'); return }
     setLoading(true)
     const res = await fetch('/api/bets/join', {
       method: 'POST',
@@ -33,7 +33,7 @@ export default function BetDetailPage() {
       body: JSON.stringify({ bet_id: parseInt(id as string), side: joinSide, amount: parseFloat(joinStake) }),
     })
     setLoading(false)
-    if (res.ok) { showToast("You're in! ÃÂ°ÃÂÃÂÃÂ¯"); load() }
+    if (res.ok) { showToast("You're in! ¯"); load() }
     else { const d = await res.json(); showToast(d.error || 'Failed') }
   }
 
@@ -51,8 +51,8 @@ export default function BetDetailPage() {
   const canJoin = !isParticipant && !isCreator && !joinDeadlinePassed && bet.status === 'open'
   const canVote = (bet.status === 'voting' || endTimePassed) && !isSubject
 
-  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + p.amount, 0) || 0
-  const noPool  = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + p.amount, 0) || 0
+  const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
+  const noPool  = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
   const total = yesPool + noPool || 1
   const yesPct = Math.round(yesPool / total * 100)
 
@@ -77,16 +77,16 @@ export default function BetDetailPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 4, background: 'linear-gradient(to bottom, var(--pink), var(--red))' }} />
         <div style={{ paddingLeft: 12 }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {bet.about_self ? 'ÃÂ°ÃÂÃÂÃÂ Self bet' : `ÃÂ°ÃÂÃÂÃÂ About ${bet.subject?.display_name || 'someone'}`}
+            {bet.about_self ? ' Self bet' : ` About ${bet.subject?.display_name || 'someone'}`}
           </div>
           <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, marginBottom: 16 }}>
             {bet.text}
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <Chip icon="ÃÂ°ÃÂÃÂÃÂ¸" label={`$${bet.stake_amount} stake`} />
-            {bet.proof_photo && <Chip icon="ÃÂ°ÃÂÃÂÃÂ·" label="Photo" />}
-            {bet.proof_video && <Chip icon="ÃÂ°ÃÂÃÂÃÂ¹" label="Video" />}
-            {bet.proof_geolocation && <Chip icon="ÃÂ°ÃÂÃÂÃÂ" label="Location" />}
+            <Chip icon="¸" label={`$${bet.stake_amount} stake`} />
+            {bet.proof_photo && <Chip icon="·" label="Photo" />}
+            {bet.proof_video && <Chip icon="¹" label="Video" />}
+            {bet.proof_geolocation && <Chip icon="" label="Location" />}
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function BetDetailPage() {
       {/* Participants */}
       {bet.participants?.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="section-label">ÃÂ°ÃÂÃÂÃÂ° Who's in</div>
+          <div className="section-label">Who's in</div>
           {bet.participants.map((p: any) => (
             <div key={p.id} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -132,16 +132,16 @@ export default function BetDetailPage() {
       {/* Proofs */}
       {proofs?.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="section-label">ÃÂ°ÃÂÃÂÃÂ Proof submitted</div>
+          <div className="section-label"> Proof submitted</div>
           {proofs.map((p: any) => (
             <div key={p.id} style={{ marginBottom: 10 }}>
               {p.photo_url && <img src={p.photo_url} alt="proof" style={{ width: '100%', borderRadius: 12, objectFit: 'cover', maxHeight: 220 }} />}
               {p.video_url && <video src={p.video_url} controls style={{ width: '100%', borderRadius: 12 }} />}
               {p.latitude && (
                 <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)' }}>
-                  ÃÂ°ÃÂÃÂÃÂ {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
+                   {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
                   <a href={`https://maps.google.com/?q=${p.latitude},${p.longitude}`} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>
-                    View ÃÂ¢ÃÂÃÂ
+                    View ¢
                   </a>
                 </div>
               )}
@@ -153,7 +153,7 @@ export default function BetDetailPage() {
       {/* Votes */}
       {votes?.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="section-label">ÃÂ°ÃÂÃÂÃÂ³ÃÂ¯ÃÂ¸ÃÂ Votes ({votes.length})</div>
+          <div className="section-label">³¯¸ Votes ({votes.length})</div>
           <div style={{ display: 'flex', gap: 8 }}>
             {['yes', 'no', 'nullify'].map(v => {
               const count = votes.filter((vote: any) => vote.vote === v).length
@@ -201,8 +201,8 @@ export default function BetDetailPage() {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, marginBottom: 20 }}>
           <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, letterSpacing: 1, marginBottom: 16 }}>Join This Bet</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-            <SideJoinBtn label="ÃÂ¢ÃÂÃÂ YES" active={joinSide === 'yes'} color="teal" onClick={() => setJoinSide('yes')} />
-            <SideJoinBtn label="ÃÂ¢ÃÂÃÂ NO" active={joinSide === 'no'} color="pink" onClick={() => setJoinSide('no')} />
+            <SideJoinBtn label="¢ YES" active={joinSide === 'yes'} color="teal" onClick={() => setJoinSide('yes')} />
+            <SideJoinBtn label="¢ NO" active={joinSide === 'no'} color="pink" onClick={() => setJoinSide('no')} />
           </div>
           <div style={{ position: 'relative', marginBottom: 14 }}>
             <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: 'var(--pink)' }}>$</span>
@@ -210,7 +210,7 @@ export default function BetDetailPage() {
               style={{ paddingLeft: 30, fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, letterSpacing: 1 }} />
           </div>
           <button className="btn-primary" onClick={handleJoin} disabled={loading}>
-            {loading ? 'Joining...' : "I'M IN ÃÂ°ÃÂÃÂÃÂ¯"}
+            {loading ? 'Joining...' : "I'M IN ¯"}
           </button>
         </div>
       )}
@@ -225,7 +225,7 @@ export default function BetDetailPage() {
             color: '#000', fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, letterSpacing: 2,
             cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,215,0,0.3)',
           }}>
-            ÃÂ¢ÃÂÃÂ¡ CAST YOUR VERDICT
+            ¢¡ CAST YOUR VERDICT
           </button>
         </Link>
       )}
@@ -237,17 +237,17 @@ export default function BetDetailPage() {
           border: `1px solid ${bet.winning_side === 'yes' ? 'rgba(0,255,224,0.3)' : 'rgba(255,31,107,0.3)'}`,
           borderRadius: 16, padding: 20, textAlign: 'center',
         }}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>{bet.winning_side === 'yes' ? 'ÃÂ¢ÃÂÃÂ' : 'ÃÂ¢ÃÂÃÂ'}</div>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>{bet.winning_side === 'yes' ? '¢' : '¢'}</div>
           <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: bet.winning_side === 'yes' ? 'var(--teal)' : 'var(--pink)', letterSpacing: 1 }}>
             {bet.winning_side === 'yes' ? 'YES WON' : 'NO WON'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Settle up with your friends IRL ÃÂ°ÃÂÃÂÃÂ¸</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Settle up with your friends IRL ¸</div>
         </div>
       )}
 
       {bet.status === 'nullified' && (
         <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>ÃÂ°ÃÂÃÂ¤ÃÂ·</div>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>¤·</div>
           <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--text-muted)', letterSpacing: 1 }}>NULLIFIED</div>
           <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 4 }}>{bet.nullified_reason || 'No winners this time'}</div>
         </div>
@@ -259,10 +259,10 @@ export default function BetDetailPage() {
 function StatusBadge({ status, winningSide }: { status: string; winningSide?: string }) {
   const map: any = {
     open:      { label: 'Open',      bg: 'rgba(0,255,224,0.12)',  color: 'var(--teal)' },
-    active:    { label: 'ÃÂ°ÃÂÃÂÃÂ¥ Active', bg: 'rgba(255,31,107,0.12)', color: 'var(--pink)' },
-    voting:    { label: 'ÃÂ°ÃÂÃÂÃÂ³ÃÂ¯ÃÂ¸ÃÂ Voting', bg: 'rgba(255,215,0,0.12)',  color: 'var(--gold)' },
-    settled:   { label: `ÃÂ¢ÃÂÃÂ ${winningSide?.toUpperCase()} WON`, bg: 'rgba(0,255,224,0.08)', color: 'var(--teal)' },
-    nullified: { label: 'ÃÂ¢ÃÂÃÂ Nullified', bg: 'var(--surface-2)', color: 'var(--text-muted)' },
+    active:    { label: '¥ Active', bg: 'rgba(255,31,107,0.12)', color: 'var(--pink)' },
+    voting:    { label: '³¯¸ Voting', bg: 'rgba(255,215,0,0.12)',  color: 'var(--gold)' },
+    settled:   { label: `¢ ${winningSide?.toUpperCase()} WON`, bg: 'rgba(0,255,224,0.08)', color: 'var(--teal)' },
+    nullified: { label: '¢ Nullified', bg: 'var(--surface-2)', color: 'var(--text-muted)' },
   }
   const s = map[status] || map.open
   return (
@@ -292,7 +292,7 @@ function DatePill({ label, date, passed }: any) {
     <div style={{ flex: 1, background: 'var(--surface-2)', borderRadius: 10, padding: '10px 12px' }}>
       <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: 1, color: 'var(--text-muted)', marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 12, color: passed ? 'var(--pink)' : 'var(--text)', fontWeight: 500 }}>
-        {new Date(date).toLocaleDateString()} {passed && 'ÃÂ¢ÃÂÃÂ'}
+        {new Date(date).toLocaleDateString()} {passed && '¢'}
       </div>
     </div>
   )
@@ -313,7 +313,7 @@ function SideJoinBtn({ label, active, color, onClick }: any) {
 function Loader() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70dvh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>ÃÂ°ÃÂÃÂ¦ÃÂ©</div>
+      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>¦©</div>
     </div>
   )
 }
