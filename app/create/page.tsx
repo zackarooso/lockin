@@ -116,7 +116,7 @@ export default function CreatePage() {
         </div>
       </div>
 
-      {/* Creator side — only if about friend */}
+      {/* Creator side only if about friend */}
       {subject === 'friend' && (
         <div style={{ marginBottom: 20 }}>
           <label className="form-label">I'm betting they will...</label>
@@ -242,7 +242,7 @@ function getStakeComment(amount: number) {
   if (amount < 20)  return 'okay... modest energy'
   if (amount < 50)  return 'now we\'re talking'
   if (amount < 100) return 'SERIOUS commitment'
-  if (amount < 500) return '️ ferrari energy right here'
+  if (amount < 500) return 'ferrari energy right here'
   return 'absolute MANIAC. respect.'
 }
 
