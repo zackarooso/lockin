@@ -35,11 +35,11 @@ export default function Home() {
             <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, color: 'var(--text-muted)', letterSpacing: 1 }}>No bets yet</div>
             <p style={{ color: 'var(--text-faint)', fontSize: 14, marginTop: 8 }}>Create your first bet or get invited by a friend.</p>
           </div>
-        ) : bets.map(bet => {
-          const yesPool = (bet.participants || []).filter(p => p.side === 'yes').reduce((s, p) => s + Number(p.amount), 0)
-          const noPool = (bet.participants || []).filter(p => p.side === 'no').reduce((s, p) => s + Number(p.amount), 0)
+        ) : bets.map((bet: any) => {
+          const yesPool = (bet.participants || []).filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0)
+          const noPool = (bet.participants || []).filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0)
           const total = yesPool + noPool || 1
-          const myP = (bet.participants || []).find(p => p.user_id === user?.id)
+          const myP = (bet.participants || []).find((p: any) => p.user_id === user?.id)
           return (
             <div key={bet.id} onClick={() => router.push('/bet/' + bet.id)}
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12, cursor: 'pointer' }}>
