@@ -5,61 +5,66 @@ import BottomNav from '@/components/BottomNav'
 
 export default function Home() {
   const router = useRouter()
-  const [data, setData] = useState(null)
+  const [user, setUser] = useState(null)
+  const [bets, setBets] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/me')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { setData(d); setLoading(false) })
-      .catch(() => setLoading(false))
+    fetch('/api/me').then(r => r.json()).then(d => {
+      if (d.error) { router.replace('/auth'); return }
+      setUser(d.user); setBets(d.bets || []); setLoading(false)
+    }).catch(() => router.replace('/auth'))
   }, [])
 
-  if (loading) return <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading...</div>
+  if (loading) return <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: 'var(--pink)' }}>Loading...</div></div>
 
-  const bets = data?.bets || []
+  function statusColor(s) {
+    const map = { active: 'var(--teal)', open: 'var(--gold)', settled: '#888', voting: 'var(--pink)', nullified: '#666' }
+    return map[s] || 'var(--text-muted)'
+  }
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--bg)', paddingBottom: 100 }}>
-      <div className="header">
-        <div className="logo">LOCK IN</div>
-        <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 10, color: 'var(--pink)', textAlign: 'right', lineHeight: 1.3 }}>PUT $$ ON IT<br />LET EM JUDGE U</div>
-      </div>
-
-      <div style={{ padding: '12px 16px' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--bg)', paddingBottom: 80 }}>
+      <header style={{ padding: '16px 20px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, background: 'linear-gradient(135deg, #FF1F6B, #00FFE0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: 3 }}>LOCK IN</div>
+        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Hey, {user?.display_name || 'friend'}</div>
+      </header>
+      <div style={{ padding: '0 16px' }}>
         {bets.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🎯</div>
             <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, color: 'var(--text-muted)', letterSpacing: 1 }}>No bets yet</div>
-            <p style={{ color: 'var(--text-faint)', fontSize: 14, marginBottom: 24 }}>Create one or get someone to invite you</p>
-            <button className="btn-primary" onClick={() => router.push('/create')} style={{ maxWidth: 200 }}>CREATE A BET</button>
+            <p style={{ color: 'var(--text-faint)', fontSize: 14, marginTop: 8 }}>Create your first bet or get invited by a friend.</p>
           </div>
-        ) : bets.map((bet) => (
-          <div key={bet.id} onClick={() => router.push('/bet/' + bet.id)} style={{ background: 'var(--surface)', borderRadius: 16, padding: 16, marginBottom: 12, cursor: 'pointer', border: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <span style={{ background: bet.status === 'active' ? 'rgba(0,255,224,0.1)' : bet.status === 'settled' ? 'rgba(255,215,0,0.1)' : 'rgba(255,31,107,0.1)', color: bet.status === 'active' ? 'var(--teal)' : bet.status === 'settled' ? 'var(--gold)' : 'var(--pink)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '2px 8px', borderRadius: 99, border: '1px solid currentColor' }}>
-                {bet.status?.toUpperCase()}
-              </span>
-              {data?.user && bet.participants?.find(p => p.user_id === data.user.id) && (
-                <span style={{ background: 'rgba(255,215,0,0.1)', color: 'var(--gold)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '2px 8px', borderRadius: 99, border: '1px solid currentColor' }}>
-                  YOU: {bet.participants.find(p => p.user_id === data.user.id)?.side?.toUpperCase()}
-                </span>
-              )}
+        ) : bets.map(bet => {
+          const yesPool = (bet.participants || []).filter(p => p.side === 'yes').reduce((s, p) => s + Number(p.amount), 0)
+          const noPool = (bet.participants || []).filter(p => p.side === 'no').reduce((s, p) => s + Number(p.amount), 0)
+          const total = yesPool + noPool || 1
+          const myP = (bet.participants || []).find(p => p.user_id === user?.id)
+          return (
+            <div key={bet.id} onClick={() => router.push('/bet/' + bet.id)}
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 11, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1, color: statusColor(bet.status), border: '1px solid ' + statusColor(bet.status), borderRadius: 6, padding: '2px 8px' }}>{(bet.status || 'open').toUpperCase()}</span>
+                {myP && <span style={{ fontSize: 11, fontFamily: 'Bebas Neue, sans-serif', color: myP.side === 'yes' ? 'var(--teal)' : 'var(--pink)', border: '1px solid ' + (myP.side === 'yes' ? 'var(--teal)' : 'var(--pink)'), borderRadius: 6, padding: '2px 8px' }}>YOU: {myP.side.toUpperCase()}</span>}
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--text-faint)', fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1, marginBottom: 4 }}>{bet.about_self ? 'SELF BET' : 'MUTUAL BET'}</div>
+              <div style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.4, marginBottom: 10 }}>{bet.text}</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                <span style={{ fontSize: 11, background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 8, padding: '3px 10px', fontFamily: 'Bebas Neue, sans-serif' }}>${Number(bet.stake_amount)} stake</span>
+                {bet.proof_photo && <span style={{ fontSize: 11, background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 8, padding: '3px 10px', fontFamily: 'Bebas Neue, sans-serif' }}>Photo</span>}
+                {bet.proof_video && <span style={{ fontSize: 11, background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 8, padding: '3px 10px', fontFamily: 'Bebas Neue, sans-serif' }}>Video</span>}
+                {bet.proof_geolocation && <span style={{ fontSize: 11, background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 8, padding: '3px 10px', fontFamily: 'Bebas Neue, sans-serif' }}>Location</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ flex: 1, height: 4, background: 'var(--surface-2)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: (yesPool/total*100) + '%', background: 'linear-gradient(90deg, var(--teal), #00cc88)' }} />
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--teal)', fontFamily: 'Bebas Neue, sans-serif' }}>YES ${yesPool}</span>
+                <span style={{ fontSize: 11, color: 'var(--pink)', fontFamily: 'Bebas Neue, sans-serif' }}>NO ${noPool}</span>
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1 }}>
-              {bet.about_self ? 'SELF BET' : 'MUTUAL BET'}
-            </div>
-            <div style={{ fontSize: 16, color: 'var(--text)', lineHeight: 1.4, marginBottom: 10 }}>{bet.text}</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              <span style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', fontSize: 11, padding: '3px 8px', borderRadius: 99 }}>
-                {'$' + Number(bet.stake_amount) + ' stake'}
-              </span>
-              {bet.proof_photo && <span style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', fontSize: 11, padding: '3px 8px', borderRadius: 99 }}>Photo</span>}
-              {bet.proof_video && <span style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', fontSize: 11, padding: '3px 8px', borderRadius: 99 }}>Video</span>}
-              {bet.proof_geolocation && <span style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', fontSize: 11, padding: '3px 8px', borderRadius: 99 }}>Location</span>}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
       <BottomNav active="feed" />
     </div>
