@@ -153,7 +153,7 @@ export default function BetDetailPage() {
       {/* Votes */}
       {votes?.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="section-label">³¯¸ Votes ({votes.length})</div>
+          <div className="section-label">Votes ({votes.length})</div>
           <div style={{ display: 'flex', gap: 8 }}>
             {['yes', 'no', 'nullify'].map(v => {
               const count = votes.filter((vote: any) => vote.vote === v).length
