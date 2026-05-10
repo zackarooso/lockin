@@ -5,11 +5,11 @@ import BottomNav from '@/components/BottomNav'
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; bg: string; color: string }> = {
-    open: { label: 'OPEN', bg: 'rgba(255,31,107,0.1)', color: 'var(--pink)' },
-    active: { label: 'ACTIVE', bg: 'rgba(0,255,224,0.1)', color: 'var(--teal)' },
-    voting: { label: 'VOTING', bg: 'rgba(255,215,0,0.1)', color: 'var(--gold)' },
-    settled: { label: 'SETTLED', bg: 'rgba(255,215,0,0.1)', color: 'var(--gold)' },
-    nullified: { label: 'NULLIFIED', bg: 'rgba(120,120,120,0.1)', color: '#888' },
+    open:     { label: 'OPEN',      bg: 'rgba(255,31,107,0.1)',  color: 'var(--pink)' },
+    active:   { label: 'ACTIVE',    bg: 'rgba(0,255,224,0.1)',   color: 'var(--teal)' },
+    voting:   { label: 'VOTING',    bg: 'rgba(255,215,0,0.1)',   color: 'var(--gold)' },
+    settled:  { label: 'SETTLED',   bg: 'rgba(255,215,0,0.1)',   color: 'var(--gold)' },
+    nullified:{ label: 'NULLIFIED', bg: 'rgba(120,120,120,0.1)', color: '#888' },
   }
   const s = map[status] || map.open
   return <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '3px 10px', borderRadius: 99, background: s.bg, color: s.color, border: '1px solid currentColor' }}>{s.label}</span>
@@ -26,15 +26,19 @@ export default function BetPage({ params }: { params: { id: string } }) {
   const [joinAmount, setJoinAmount] = useState('')
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [closing, setClosing] = useState<string | null>(null)
+  const [closeError, setCloseError] = useState('')
 
-  useEffect(() => {
+  function reload() {
     fetch('/api/bets/' + params.id)
       .then(r => r.ok ? r.json() : null)
       .then((d: any) => {
         if (d) { setBet(d.bet); setVotes(d.votes || []); setCurrentUserId(d.currentUserId) }
         setLoading(false)
       }).catch(() => setLoading(false))
-  }, [params.id])
+  }
+
+  useEffect(() => { reload() }, [params.id])
 
   async function joinBet() {
     if (!joinAmount || parseFloat(joinAmount) <= 0) { setError('Enter stake amount'); return }
@@ -58,18 +62,37 @@ export default function BetPage({ params }: { params: { id: string } }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  async function doClose(action: 'force_voting' | 'finalize' | 'nullify', confirmMsg?: string) {
+    if (confirmMsg && !window.confirm(confirmMsg)) return
+    setClosing(action); setCloseError('')
+    try {
+      const res = await fetch('/api/bets/close', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bet_id: Number(params.id), action })
+      })
+      const data = await res.json()
+      if (!res.ok) { setCloseError(data.error || 'Failed'); setClosing(null); return }
+      setClosing(null)
+      reload()
+    } catch (e: any) {
+      setCloseError(e.message || 'Failed')
+      setClosing(null)
+    }
+  }
+
   if (loading) return <div style={{ minHeight: '60dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading...</div>
   if (!bet) return <div style={{ minHeight: '60dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Bet not found</div>
 
   const participants = bet.participants || []
   const yesPool = participants.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0)
-  const noPool = participants.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0)
+  const noPool  = participants.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0)
   const total = yesPool + noPool || 1
   const yesPct = Math.round((yesPool / total) * 100)
   const noPct = 100 - yesPct
 
   const isParticipant = participants.some((p: any) => Number(p.user_id) === Number(currentUserId))
-  const isSubject = Number(bet.subject_user_id) === Number(currentUserId)
+  const isSubject     = Number(bet.subject_user_id) === Number(currentUserId)
+  const isCreator     = Number(bet.creator_user_id) === Number(currentUserId)
   const canJoin = !isParticipant && !isSubject && (bet.status === 'open' || bet.status === 'active')
   const canVote = isParticipant && !isSubject && bet.status === 'voting' && !votes.some((v: any) => Number(v.voter_user_id) === Number(currentUserId))
 
@@ -83,6 +106,7 @@ export default function BetPage({ params }: { params: { id: string } }) {
           {isParticipant && <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '3px 10px', borderRadius: 99, background: 'rgba(255,215,0,0.1)', color: 'var(--gold)', border: '1px solid currentColor' }}>
             YOU: {participants.find((p: any) => Number(p.user_id) === Number(currentUserId))?.side?.toUpperCase()}
           </span>}
+          {isCreator && <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '3px 10px', borderRadius: 99, background: 'rgba(255,31,107,0.1)', color: 'var(--pink)', border: '1px solid currentColor' }}>CREATOR</span>}
         </div>
 
         <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1, marginBottom: 6 }}>
@@ -169,9 +193,38 @@ export default function BetPage({ params }: { params: { id: string } }) {
         )}
 
         {canVote && (
-          <div style={{ background: 'var(--surface)', borderRadius: 16, padding: 16 }}>
+          <div style={{ background: 'var(--surface)', borderRadius: 16, padding: 16, marginBottom: 16 }}>
             <div className="section-label" style={{ marginBottom: 12 }}>CAST YOUR VOTE</div>
             <button className="btn-primary" onClick={() => router.push('/bet/' + params.id + '/vote')} style={{ marginBottom: 0 }}>VOTE NOW</button>
+          </div>
+        )}
+
+        {isCreator && (bet.status === 'open' || bet.status === 'active' || bet.status === 'voting') && (
+          <div style={{ background: 'var(--surface)', borderRadius: 16, padding: 16, marginBottom: 16, border: '1px solid rgba(255,31,107,0.3)' }}>
+            <div className="section-label" style={{ marginBottom: 12 }}>CREATOR ACTIONS</div>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
+              Bets auto-move to voting when the end time passes. Use these to override.
+            </p>
+            {(bet.status === 'open' || bet.status === 'active') && (
+              <button
+                onClick={() => doClose('force_voting', 'Move this bet to VOTING now? Participants will be able to vote.')}
+                disabled={closing !== null}
+                style={{ width: '100%', padding: 14, borderRadius: 12, cursor: 'pointer', background: 'rgba(255,215,0,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: 1, marginBottom: 10 }}
+              >{closing === 'force_voting' ? '...' : 'MOVE TO VOTING NOW'}</button>
+            )}
+            {bet.status === 'voting' && (
+              <button
+                onClick={() => doClose('finalize', 'Finalize this bet using current votes (' + votes.length + ')?')}
+                disabled={closing !== null}
+                style={{ width: '100%', padding: 14, borderRadius: 12, cursor: 'pointer', background: 'rgba(0,255,224,0.1)', border: '1px solid var(--teal)', color: 'var(--teal)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: 1, marginBottom: 10 }}
+              >{closing === 'finalize' ? '...' : 'FINALIZE WITH ' + votes.length + ' VOTES'}</button>
+            )}
+            <button
+              onClick={() => doClose('nullify', 'Nullify this bet? No winners. Cannot be undone.')}
+              disabled={closing !== null}
+              style={{ width: '100%', padding: 14, borderRadius: 12, cursor: 'pointer', background: 'transparent', border: '1px solid var(--text-faint)', color: 'var(--text-muted)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 14, letterSpacing: 1 }}
+            >{closing === 'nullify' ? '...' : 'NULLIFY BET'}</button>
+            {closeError && <p style={{ color: 'var(--pink)', fontSize: 12, marginTop: 10 }}>{closeError}</p>}
           </div>
         )}
       </div>
