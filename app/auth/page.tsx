@@ -55,7 +55,7 @@ function AuthInner() {
 
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
-      <div style={{ fontSize: 64, marginBottom: 8 }}>🦩</div>
+      <div style={{ fontSize: 64, marginBottom: 8, animation: 'flamingo-bob 3s ease-in-out infinite' }}>{'\u{1F9A9}'}</div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, letterSpacing: 6, background: 'linear-gradient(135deg, #FF0055, #FF1F6B, #FF6FA0, #00FFE0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 0.9, marginBottom: 8 }}>LOCK IN</div>
       <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 14, color: 'rgba(255,31,107,0.7)', marginBottom: redirectTo !== '/' ? 20 : 40, textAlign: 'center' }}>
         put money on it. let your friends judge you.

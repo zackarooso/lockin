@@ -3,26 +3,26 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNav from '@/components/BottomNav'
 
-function StatusBadge({ status }) {
-  const map = {
-    open:      { label: 'OPEN',      bg: 'rgba(255,31,107,0.1)',  color: 'var(--pink)' },
-    active:    { label: 'ACTIVE',    bg: 'rgba(0,255,224,0.1)',   color: 'var(--teal)' },
-    voting:    { label: 'VOTING',    bg: 'rgba(255,215,0,0.1)',   color: 'var(--gold)' },
-    settled:   { label: 'SETTLED',   bg: 'rgba(255,215,0,0.1)',   color: 'var(--gold)' },
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; bg: string; color: string }> = {
+    open: { label: 'OPEN', bg: 'rgba(255,31,107,0.1)', color: 'var(--pink)' },
+    active: { label: 'ACTIVE', bg: 'rgba(0,255,224,0.1)', color: 'var(--teal)' },
+    voting: { label: 'VOTING', bg: 'rgba(255,215,0,0.1)', color: 'var(--gold)' },
+    settled: { label: 'SETTLED', bg: 'rgba(255,215,0,0.1)', color: 'var(--gold)' },
     nullified: { label: 'NULLIFIED', bg: 'rgba(120,120,120,0.1)', color: '#888' },
   }
   const s = map[status] || map.open
   return <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '3px 10px', borderRadius: 99, background: s.bg, color: s.color, border: '1px solid currentColor' }}>{s.label}</span>
 }
 
-export default function BetPage({ params }) {
+export default function BetPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [bet, setBet] = useState(null)
-  const [votes, setVotes] = useState([])
-  const [currentUserId, setCurrentUserId] = useState(null)
+  const [bet, setBet] = useState<any>(null)
+  const [votes, setVotes] = useState<any[]>([])
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [joining, setJoining] = useState(false)
-  const [joinSide, setJoinSide] = useState('yes')
+  const [joinSide, setJoinSide] = useState<'yes'|'no'>('yes')
   const [joinAmount, setJoinAmount] = useState('')
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -30,7 +30,7 @@ export default function BetPage({ params }) {
   useEffect(() => {
     fetch('/api/bets/' + params.id)
       .then(r => r.ok ? r.json() : null)
-      .then(d => {
+      .then((d: any) => {
         if (d) { setBet(d.bet); setVotes(d.votes || []); setCurrentUserId(d.currentUserId) }
         setLoading(false)
       }).catch(() => setLoading(false))
@@ -50,40 +50,38 @@ export default function BetPage({ params }) {
   }
 
   function copyLink() {
-    const url = 'https://lockin-production-1278.up.railway.app/bet/' + params.id
-    navigator.clipboard?.writeText(url).catch(() => {})
+    const url = window.location.origin + '/bet/' + params.id
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).catch(() => {})
+    }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (loading) return <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading...</div>
-  if (!bet) return <div style={{ minHeight: '100dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Bet not found</div>
+  if (loading) return <div style={{ minHeight: '60dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading...</div>
+  if (!bet) return <div style={{ minHeight: '60dvh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Bet not found</div>
 
   const participants = bet.participants || []
-  const yesPool = participants.filter(p => p.side === 'yes').reduce((s, p) => s + Number(p.amount), 0)
-  const noPool  = participants.filter(p => p.side === 'no').reduce((s, p) => s + Number(p.amount), 0)
-  const total   = yesPool + noPool || 1
-  const yesPct  = Math.round((yesPool / total) * 100)
-  const noPct   = 100 - yesPct
+  const yesPool = participants.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0)
+  const noPool = participants.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0)
+  const total = yesPool + noPool || 1
+  const yesPct = Math.round((yesPool / total) * 100)
+  const noPct = 100 - yesPct
 
-  const isParticipant = participants.some(p => Number(p.user_id) === Number(currentUserId))
+  const isParticipant = participants.some((p: any) => Number(p.user_id) === Number(currentUserId))
   const isSubject = Number(bet.subject_user_id) === Number(currentUserId)
   const canJoin = !isParticipant && !isSubject && (bet.status === 'open' || bet.status === 'active')
-  const canVote = isParticipant && !isSubject && bet.status === 'voting' && !votes.some(v => Number(v.voter_user_id) === Number(currentUserId))
+  const canVote = isParticipant && !isSubject && bet.status === 'voting' && !votes.some((v: any) => Number(v.voter_user_id) === Number(currentUserId))
 
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--bg)', paddingBottom: 100 }}>
-      <div className="header">
-        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 20, cursor: 'pointer', padding: 0 }}>back</button>
-        <div className="logo" style={{ fontSize: 28 }}>LOCK IN</div>
-        <div />
-      </div>
-
       <div style={{ padding: '16px' }}>
-        <div style={{ marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 14, cursor: 'pointer', padding: 0, marginBottom: 12, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1 }}>{'\u2190'} BACK</button>
+
+        <div style={{ marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <StatusBadge status={bet.status} />
           {isParticipant && <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 11, letterSpacing: 1, padding: '3px 10px', borderRadius: 99, background: 'rgba(255,215,0,0.1)', color: 'var(--gold)', border: '1px solid currentColor' }}>
-            YOU: {participants.find(p => Number(p.user_id) === Number(currentUserId))?.side?.toUpperCase()}
+            YOU: {participants.find((p: any) => Number(p.user_id) === Number(currentUserId))?.side?.toUpperCase()}
           </span>}
         </div>
 
@@ -116,8 +114,11 @@ export default function BetPage({ params }) {
         </div>
 
         <div style={{ marginBottom: 16 }}>
-          <div className="section-label">Whos in</div>
-          {participants.map(p => (
+          <div className="section-label">Who is in</div>
+          {participants.length === 0 && (
+            <div style={{ color: 'var(--text-faint)', fontSize: 13, padding: '10px 0' }}>No one yet. Share the link.</div>
+          )}
+          {participants.map((p: any) => (
             <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
               <span style={{ color: 'var(--text)', fontSize: 15 }}>
                 {p.display_name || p.phone}
@@ -138,7 +139,10 @@ export default function BetPage({ params }) {
           </div>
           <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1, marginBottom: 4 }}>ENDS</div>
-            <div style={{ fontSize: 14, color: 'var(--text)' }}>{new Date(bet.end_time).toLocaleDateString()}</div>
+            <div style={{ fontSize: 14, color: 'var(--text)' }}>
+              <span style={{ marginRight: 6 }}>{'\u23F0'}</span>
+              {new Date(bet.end_time).toLocaleDateString()}
+            </div>
           </div>
         </div>
 
@@ -150,7 +154,7 @@ export default function BetPage({ params }) {
           <div style={{ background: 'var(--surface)', borderRadius: 16, padding: 16, marginBottom: 16 }}>
             <div className="section-label" style={{ marginBottom: 12 }}>JOIN THIS BET</div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              {['yes', 'no'].map(side => (
+              {(['yes', 'no'] as const).map(side => (
                 <button key={side} onClick={() => setJoinSide(side)}
                   style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid ' + (joinSide === side ? (side === 'yes' ? 'var(--teal)' : 'var(--pink)') : 'var(--border)'), background: joinSide === side ? (side === 'yes' ? 'rgba(0,255,224,0.1)' : 'rgba(255,31,107,0.1)') : 'transparent', color: joinSide === side ? (side === 'yes' ? 'var(--teal)' : 'var(--pink)') : 'var(--text-muted)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: 2, cursor: 'pointer' }}>
                   {side.toUpperCase()}
@@ -171,7 +175,7 @@ export default function BetPage({ params }) {
           </div>
         )}
       </div>
-      <BottomNav active="feed" />
+      <BottomNav />
     </div>
   )
 }

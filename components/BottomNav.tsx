@@ -19,31 +19,35 @@ export default function BottomNav() {
       position: 'relative',
       zIndex: 100,
     }}>
-      <NavBtn href="/" active={isHome} icon="" label="Feed" />
+      <NavBtn href="/" active={isHome} label="Feed" />
 
       {/* FAB */}
-      <Link href="/create" style={{ flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+      <Link href="/create" style={{ flexShrink: 0, display: 'flex', justifyContent: 'center' }} aria-label="Create new bet">
         <button style={{
           width: 60, height: 60,
           borderRadius: '50%',
           background: 'linear-gradient(135deg, #FF0055, #FF1F6B, #FF6FA0)',
           border: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 26,
+          fontSize: 32,
+          color: '#fff',
+          fontWeight: 300,
+          lineHeight: 1,
           cursor: 'pointer',
           margin: '-18px 12px 0',
           boxShadow: '0 4px 24px rgba(255,31,107,0.6), 0 0 0 1px rgba(255,31,107,0.3)',
           animation: 'pulse-glow 3s ease-in-out infinite',
           transition: 'transform var(--transition)',
-        }}> </button>
+          fontFamily: 'system-ui, sans-serif',
+        }}>+</button>
       </Link>
 
-      <NavBtn href="/scorecard" active={isScore} icon="" label="Score" />
+      <NavBtn href="/scorecard" active={isScore} label="Score" />
     </nav>
   )
 }
 
-function NavBtn({ href, active, icon, label }: { href: string; active: boolean; icon: string; label: string }) {
+function NavBtn({ href, active, label }: { href: string; active: boolean; label: string }) {
   return (
     <Link href={href} style={{ flex: 1, textDecoration: 'none' }}>
       <button style={{
@@ -55,10 +59,9 @@ function NavBtn({ href, active, icon, label }: { href: string; active: boolean; 
         opacity: active ? 1 : 0.4,
         transition: 'opacity var(--transition)',
       }}>
-        <span style={{ fontSize: 20 }}>{icon}</span>
         <span style={{
           fontFamily: 'Bebas Neue, sans-serif',
-          fontSize: 11, letterSpacing: 1.5,
+          fontSize: 14, letterSpacing: 1.5,
           color: active ? 'var(--pink)' : 'var(--text-muted)',
         }}>{label}</span>
       </button>

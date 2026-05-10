@@ -52,6 +52,15 @@ async function q(sql: string, args: any[] = []) {
   return r.rows
 }
 
+// Auto-transition: move bets to 'voting' when end_time has passed
+async function autoTransitionToVoting() {
+  try {
+    await pool.query(
+      "UPDATE bets SET status = 'voting' WHERE status IN ('open','active') AND end_time < NOW()"
+    )
+  } catch (e) {}
+}
+
 export async function findOrCreateUser(phone: string, displayName?: string | null) {
   const rows = await q('SELECT * FROM users WHERE phone = $1', [phone])
   if (rows[0]) return rows[0]
@@ -87,11 +96,13 @@ export async function createBet(data: any) {
 }
 
 export async function getBetById(id: number) {
+  await autoTransitionToVoting()
   const r = await q('SELECT * FROM bets WHERE id = $1', [id])
   return getBetWithRelations(r[0])
 }
 
 export async function getBetsForUser(userId: number) {
+  await autoTransitionToVoting()
   const bets = await q(
     'SELECT DISTINCT b.* FROM bets b LEFT JOIN bet_participants bp ON bp.bet_id = b.id WHERE b.creator_user_id = $1 OR b.subject_user_id = $1 OR bp.user_id = $1 ORDER BY b.created_at DESC LIMIT 50',
     [userId]

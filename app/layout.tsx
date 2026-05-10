@@ -1,6 +1,5 @@
 'use client'
 import './globals.css'
-import BottomNav from '@/components/BottomNav'
 import { usePathname } from 'next/navigation'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -25,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             background: 'linear-gradient(135deg, #FF1F6B, #00FFE0)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>LOCK IN</div>
-          <p style={{ color: '#8878AA', fontSize: 14 }}> Mobile only. Open on your phone.</p>
+          <p style={{ color: '#8878AA', fontSize: 14 }}>Mobile only. Open on your phone.</p>
           <p style={{ color: '#3D3260', fontSize: 12, marginTop: 8 }}>
             (or shrink your browser window below 600px)
           </p>
@@ -48,7 +47,6 @@ function Shell({ children }: { children: React.ReactNode }) {
     <>
       {!isAuth && <AppHeader />}
       <div className="scroll-area">{children}</div>
-      {!isAuth && <BottomNav />}
     </>
   )
 }
@@ -68,13 +66,12 @@ function AppHeader() {
       position: 'relative',
       zIndex: 100,
     }}>
-      {/* Left: flamingo emoji + logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{
           fontSize: 22,
           display: 'inline-block',
           animation: 'flamingo-bob 3s ease-in-out infinite',
-        }}></span>
+        }}>{'\u{1F9A9}'}</span>
         <span style={{
           fontFamily: 'Bebas Neue, sans-serif',
           fontSize: 26,
@@ -84,8 +81,6 @@ function AppHeader() {
           WebkitTextFillColor: 'transparent',
         }}>LOCK IN</span>
       </div>
-
-      {/* Right: tagline */}
       <div style={{
         fontFamily: 'Permanent Marker, cursive',
         fontSize: 10,

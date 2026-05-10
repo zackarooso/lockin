@@ -4,17 +4,19 @@ import { useRouter, useParams } from 'next/navigation'
 
 export default function VotePage() {
   const router = useRouter()
-  const { id } = useParams()
+  const params = useParams()
+  const id = params?.id as string
   const [data, setData] = useState<any>(null)
   const [selected, setSelected] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState('')
 
   useEffect(() => {
-    fetch(`/api/bets/${id}`)
-      .then(r => { if (!r.ok) router.replace('/'); return r.json() })
-      .then(setData)
-  }, [id])
+    if (!id) return
+    fetch('/api/bets/' + id)
+      .then(r => { if (!r.ok) { router.replace('/'); return null } return r.json() })
+      .then(d => { if (d) setData(d) })
+  }, [id, router])
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2200) }
 
@@ -24,11 +26,11 @@ export default function VotePage() {
     const res = await fetch('/api/bets/vote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bet_id: parseInt(id as string), vote }),
+      body: JSON.stringify({ bet_id: parseInt(id), vote }),
     })
     setLoading(false)
     if (res.ok) {
-      const msgs: any = { yes: 'Voted YES bold move', no: 'Voted NO cold blooded', nullify: 'Nullified coward' }
+      const msgs: Record<string, string> = { yes: 'Voted YES - bold move', no: 'Voted NO - cold blooded', nullify: 'Nullified - coward' }
       showToast(msgs[vote])
       setTimeout(() => router.replace('/'), 1400)
     } else {
@@ -40,24 +42,27 @@ export default function VotePage() {
 
   if (!data) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70dvh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}></div>
+      <div style={{ fontSize: 40, animation: 'flamingo-bob 1.5s ease-in-out infinite' }}>{'\u{1F9A9}'}</div>
+      <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, color: 'var(--text-muted)', letterSpacing: 2 }}>LOADING...</div>
     </div>
   )
 
-  const { bet, proofs, currentUserId } = data
-  const isSubject = bet.subject_user_id === currentUserId
+  const { bet, proofs } = data
+  const currentUserId = data.currentUserId
+  const isSubject = Number(bet.subject_user_id) === Number(currentUserId)
   const yesPool = bet.participants?.filter((p: any) => p.side === 'yes').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
-  const noPool  = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
+  const noPool = bet.participants?.filter((p: any) => p.side === 'no').reduce((s: number, p: any) => s + Number(p.amount), 0) || 0
 
   if (isSubject) return (
     <div className="screen-pad" style={{ textAlign: 'center', paddingTop: 60 }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}></div>
+      <div style={{ fontSize: 64, marginBottom: 16 }}>{'\u{1F9A9}'}</div>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: 'var(--text)', marginBottom: 8 }}>
-        You can't vote on yourself
+        You cannot vote on yourself
       </div>
       <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 14, color: 'var(--text-muted)' }}>
         that would be cheating bestie
       </div>
+      <button onClick={() => router.replace('/')} style={{ marginTop: 24, padding: '12px 28px', borderRadius: 12, background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: 1, cursor: 'pointer' }}>BACK TO FEED</button>
     </div>
   )
 
@@ -67,13 +72,14 @@ export default function VotePage() {
 
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
+        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 14, cursor: 'pointer', padding: 0, marginBottom: 12, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1 }}>{'\u2190'} BACK</button>
         <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 44, letterSpacing: 2, lineHeight: 0.9, marginBottom: 6 }}>
           <span style={{ background: 'linear-gradient(135deg, var(--gold), #FFB800)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Your Verdict
           </span>
         </div>
         <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 12, color: 'var(--text-muted)', transform: 'rotate(-1deg)' }}>
-          choose wisely. or don't.
+          choose wisely. or do not.
         </div>
       </div>
 
@@ -86,11 +92,11 @@ export default function VotePage() {
         <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, marginBottom: 12 }}>{bet.text}</div>
         <div style={{ display: 'flex', gap: 16 }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: 'var(--teal)' }}>${yesPool}</div>
+            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: 'var(--teal)' }}>{'$' + yesPool}</div>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>YES pool</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: 'var(--pink)' }}>${noPool}</div>
+            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: 'var(--pink)' }}>{'$' + noPool}</div>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>NO pool</div>
           </div>
         </div>
@@ -105,8 +111,9 @@ export default function VotePage() {
               {p.photo_url && <img src={p.photo_url} alt="proof" style={{ width: '100%', borderRadius: 14, objectFit: 'cover', maxHeight: 240, border: '1px solid var(--border)' }} />}
               {p.video_url && <video src={p.video_url} controls style={{ width: '100%', borderRadius: 14 }} />}
               {p.latitude && (
-                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)'}}> {p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}
-                  <a href={`https://maps.google.com/?q=${p.latitude},${p.longitude}`} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>Map </a>
+                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text)' }}>
+                  {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                  <a href={'https://maps.google.com/?q=' + p.latitude + ',' + p.longitude} target="_blank" rel="noreferrer" style={{ color: 'var(--teal)', marginLeft: 8, textDecoration: 'none', fontSize: 11 }}>Map</a>
                 </div>
               )}
             </div>
@@ -117,7 +124,7 @@ export default function VotePage() {
           background: 'var(--surface-2)', border: '1px dashed rgba(255,31,107,0.2)',
           borderRadius: 14, padding: 24, marginBottom: 20, textAlign: 'center',
         }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}></div>
+          <div style={{ fontSize: 28, marginBottom: 6 }}>{'\u{1F9D0}'}</div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>No proof submitted yet</div>
           <div style={{ fontFamily: 'Permanent Marker, cursive', fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>
             judge based on vibes
@@ -132,29 +139,23 @@ export default function VotePage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <VoteBtn
-            label="YES" sub="they followed through, legend"
+          <VoteBtn label="YES" sub="they followed through, legend"
             vote="yes" selected={selected} disabled={loading}
             color="var(--teal)" bg="var(--teal-dim)" border="rgba(0,255,224,0.4)"
-            onClick={castVote}
-          />
-          <VoteBtn
-            label="NO" sub="nope. not even close."
+            onClick={castVote} />
+          <VoteBtn label="NO" sub="nope. not even close."
             vote="no" selected={selected} disabled={loading}
             color="var(--pink)" bg="var(--pink-dim)" border="rgba(255,31,107,0.4)"
-            onClick={castVote}
-          />
-          <VoteBtn
-            label=" NULLIFY" sub="can't tell. no receipts."
+            onClick={castVote} />
+          <VoteBtn label="NULLIFY" sub="can not tell. no receipts."
             vote="nullify" selected={selected} disabled={loading}
             color="var(--text-muted)" bg="var(--white-dim)" border="var(--border)"
-            onClick={castVote}
-          />
+            onClick={castVote} />
         </div>
       </div>
 
       <p style={{ fontSize: 10, color: 'var(--text-faint)', textAlign: 'center', lineHeight: 1.7, fontFamily: 'Permanent Marker, cursive' }}>
-        majority wins  ties = nullified  the subject can't vote
+        majority wins. ties = nullified. the subject cannot vote.
       </p>
     </div>
   )
@@ -166,11 +167,11 @@ function VoteBtn({ label, sub, vote, selected, disabled, color, bg, border, onCl
     <button onClick={() => onClick(vote)} disabled={disabled} style={{
       width: '100%', padding: '18px 20px', textAlign: 'left',
       background: active ? bg : 'var(--surface)',
-      border: `2px solid ${active ? border : 'var(--border)'}`,
+      border: '2px solid ' + (active ? border : 'var(--border)'),
       borderRadius: 16, cursor: disabled ? 'default' : 'pointer',
       transition: 'all 220ms cubic-bezier(0.16,1,0.3,1)',
       transform: active ? 'scale(1.02)' : 'scale(1)',
-      boxShadow: active ? `0 4px 20px ${bg}` : 'none',
+      boxShadow: active ? '0 4px 20px ' + bg : 'none',
     }}>
       <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, letterSpacing: 1.5, color: active ? color : 'var(--text-muted)' }}>
         {label}
