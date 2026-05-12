@@ -12,7 +12,7 @@ export async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY, phone TEXT UNIQUE NOT NULL,
-      display_name TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
+      display_name TEXT, privy_wallet_id TEXT, privy_wallet_address TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
     );
     CREATE TABLE IF NOT EXISTS bets (
       id SERIAL PRIMARY KEY, creator_user_id INT, subject_user_id INT,
@@ -44,6 +44,11 @@ export async function initDb() {
       settled_irl BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW()
     );
   `)
+  // Add wallet columns if they don't exist (for existing DBs)
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS privy_wallet_id TEXT")
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS privy_wallet_address TEXT")
+  } catch(e) {}
   _initialized = true
 }
 
@@ -146,6 +151,17 @@ export async function markSettled(entryId: number, userId: number) {
 }
 
 export async function getProofs(betId: number) { return q('SELECT * FROM proof_submissions WHERE bet_id=$1', [betId]) }
+
+
+export async function setUserWallet(userId: number, walletId: string, walletAddress: string) {
+  await pool.query('UPDATE users SET privy_wallet_id=$1, privy_wallet_address=$2 WHERE id=$3', [walletId, walletAddress, userId])
+}
+
+export async function getUserWallet(userId: number): Promise<{ wallet_id: string; wallet_address: string } | null> {
+  const r = await q('SELECT privy_wallet_id, privy_wallet_address FROM users WHERE id=$1', [userId])
+  if (!r[0]?.privy_wallet_id) return null
+  return { wallet_id: r[0].privy_wallet_id, wallet_address: r[0].privy_wallet_address }
+}
 
 export async function settleBet(betId: number, participants: any[], votes: any[]) {
   const yes = votes.filter(v => v.vote === 'yes').length
