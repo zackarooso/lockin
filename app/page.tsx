@@ -8,9 +8,11 @@ export default function HomePage() {
   const router = useRouter()
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [walletInfo, setWalletInfo] = useState<any>(null)
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/me')
+    const res = await fetch('/api/wallet').then(r => r.json()).then(setWalletInfo).catch(() => {})
+    fetch('/api/me')
     if (res.status === 401) { router.replace('/auth'); return }
     const d = await res.json()
     setData(d)
@@ -75,6 +77,35 @@ export default function HomePage() {
           </div>
         </div>
       </Link>
+
+      {/* Wallet / Add Funds */}
+      {walletInfo?.wallet_address && (
+        <div style={{
+          margin: '0 16px 16px', padding: '14px 16px', borderRadius: 14,
+          background: 'linear-gradient(135deg, rgba(0,255,224,0.08), rgba(255,31,107,0.08))',
+          border: '1px solid rgba(0,255,224,0.2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+        }}>
+          <div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: 1.5, fontFamily: 'Bebas Neue, sans-serif' }}>Wallet Balance</div>
+            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: 'var(--teal)', lineHeight: 1 }}>
+              ${(walletInfo.balance || 0).toFixed(2)}
+            </div>
+          </div>
+          {walletInfo.onramp_url && (
+            <a href={walletInfo.onramp_url} target="_blank" rel="noopener noreferrer"
+               style={{
+                 padding: '10px 16px', borderRadius: 10,
+                 background: 'linear-gradient(135deg, var(--pink), #FF6FA0)',
+                 color: 'white', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: 1.5,
+                 textDecoration: 'none', display: 'inline-block',
+                 boxShadow: '0 4px 14px rgba(255,31,107,0.4)'
+               }}>
+              + ADD FUNDS
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Vote needed */}
       {voting.length > 0 && (
