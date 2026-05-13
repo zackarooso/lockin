@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth'
-import { getUserById, getUserWallet, initDb } from '@/lib/db'
-import { getOnrampUrl } from '@/lib/privy'
+import { getUserWallet, initDb } from '@/lib/db'
+import { getOnrampUrl, getUSDCBalance } from '@/lib/privy'
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,15 +9,16 @@ export async function GET(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const user = await getUserById(session.userId)
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
     const wallet = await getUserWallet(session.userId)
-
+    if (!wallet?.wallet_address) {
+      return NextResponse.json({ wallet_address: null, balance: 0, onramp_url: null })
+    }
+    const balance = await getUSDCBalance(wallet.wallet_address)
     return NextResponse.json({
-      wallet_address: wallet?.wallet_address || null,
-      wallet_id: wallet?.wallet_id || null,
-      onramp_url: wallet?.wallet_address ? getOnrampUrl(wallet.wallet_address) : null,
+      wallet_address: wallet.wallet_address,
+      wallet_id: wallet.wallet_id,
+      balance,
+      onramp_url: getOnrampUrl(wallet.wallet_address, 20),
     })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
