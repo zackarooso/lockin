@@ -22,6 +22,7 @@ export default function BetPage({ params }: { params: { id: string } }) {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [joining, setJoining] = useState(false)
+  const [fundsModal, setFundsModal] = useState<{needed: number, balance: number, onramp_url: string} | null>(null)
   const [joinSide, setJoinSide] = useState<'yes'|'no'>('yes')
   const [joinAmount, setJoinAmount] = useState('')
   const [error, setError] = useState('')
@@ -50,6 +51,7 @@ export default function BetPage({ params }: { params: { id: string } }) {
     const data = await res.json()
     setJoining(false)
     if (res.ok) window.location.reload()
+    else if (data.error === 'insufficient_funds') setFundsModal({needed: data.needed, balance: data.balance, onramp_url: data.onramp_url})
     else setError(data.error || 'Failed to join')
   }
 
@@ -229,6 +231,41 @@ export default function BetPage({ params }: { params: { id: string } }) {
         )}
       </div>
       <BottomNav />
+      {fundsModal && (
+        <div onClick={() => setFundsModal(null)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            background: 'var(--surface)', borderRadius: 20, padding: 24, maxWidth: 340, width: '100%',
+            border: '1px solid var(--border)', textAlign: 'center'
+          }}>
+            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: 'var(--pink)', letterSpacing: 2, marginBottom: 8 }}>
+              ADD FUNDS
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 20, lineHeight: 1.4 }}>
+              You need <span style={{ color: 'var(--teal)', fontWeight: 600 }}>${fundsModal.needed}</span> USDC to join this bet.<br/>
+              Your balance: <span style={{ color: 'var(--text)' }}>${fundsModal.balance.toFixed(2)}</span>
+            </p>
+            <a href={fundsModal.onramp_url} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'block', padding: '14px 24px', borderRadius: 12,
+                background: 'linear-gradient(135deg, var(--pink), #FF6FA0)',
+                color: 'white', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: 2,
+                textDecoration: 'none', marginBottom: 10,
+                boxShadow: '0 6px 20px rgba(255,31,107,0.4)'
+              }}>
+              ADD FUNDS WITH APPLE PAY
+            </a>
+            <button onClick={() => setFundsModal(null)} style={{
+              background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 13, padding: 8, cursor: 'pointer'
+            }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
