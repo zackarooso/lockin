@@ -1,6 +1,7 @@
 'use client'
 import './globals.css'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -66,7 +67,7 @@ function AppHeader() {
       position: 'relative',
       zIndex: 100,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <Link href="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{
           fontSize: 22,
           display: 'inline-block',
@@ -80,7 +81,7 @@ function AppHeader() {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>LOCK IN</span>
-      </div>
+      </Link>
       <div style={{
         fontFamily: 'Permanent Marker, cursive',
         fontSize: 10,
