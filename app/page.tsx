@@ -11,8 +11,8 @@ export default function HomePage() {
   const [walletInfo, setWalletInfo] = useState<any>(null)
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/wallet').then(r => r.json()).then(setWalletInfo).catch(() => {})
-    fetch('/api/me')
+    fetch('/api/wallet').then(r => r.json()).then(setWalletInfo).catch(() => {})
+    const res = await fetch('/api/me')
     if (res.status === 401) { router.replace('/auth'); return }
     const d = await res.json()
     setData(d)
